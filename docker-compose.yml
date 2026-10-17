@@ -1,0 +1,95 @@
+# MatDraw – wdrożenie produkcyjne na Coolify (https://matdraw.weblance-devs.pl).
+# Autorzy: Michał Kozieński, Weblance.pl
+#
+# Coolify: New Resource → Git repository → Build Pack: "Docker Compose", plik: /docker-compose.yml.
+# Domenę usługi "matdraw" ustaw na: https://matdraw.weblance-devs.pl:4000  (port = port wewnętrzny kontenera).
+# Sekrety (hasła MySQL, JWT, TURN, kod rejestracji korepetytorów) są wygenerowane losowo i wpisane poniżej na stałe.
+# UWAGA: nie zmieniaj hasła MySQL po pierwszym wdrożeniu – baza w wolumenie zachowuje hasło z pierwszego startu.
+# Ręcznie ustaw w Coolify tylko: TURN_EXTERNAL_IP (publiczny IPv4 serwera); opcjonalnie SEED_TUTOR_PASSWORD.
+# Szczegóły: docs/WDROZENIE.md
+
+services:
+  matdraw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      # Coolify: domena i routing (Traefik, z obsługą WebSocket) do portu 4000 kontenera.
+      - SERVICE_URL_MATDRAW_4000
+      - PORT=4000
+      - STORE=prisma
+      - DATABASE_URL=mysql://matdraw:e52b57cdddd7dd47054db54f299cebec@mysql:3306/matdraw
+      - JWT_SECRET=1e8447c00644fada307dbd6a01c3e4d16200260af6baf3bdb2b3dc89a57e917ca0673e754ab37858b8c1d96100f1489e69d17e0beacde59dfea43af54b6e68f9
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+      # Kod wymagany przy rejestracji kolejnych kont korepetytorów.
+      - TUTOR_REGISTRATION_SECRET=${TUTOR_REGISTRATION_SECRET:-vJd9vhtOtLM3}
+      - STUN_URLS=${STUN_URLS:-stun:matdraw.weblance-devs.pl:3478,stun:stun.l.google.com:19302}
+      - TURN_URLS=${TURN_URLS:-turn:matdraw.weblance-devs.pl:3478?transport=udp,turn:matdraw.weblance-devs.pl:3478?transport=tcp}
+      - TURN_SECRET=1f4c755969527267b501c149e93047e0db8b360e9a33a53956cf8fe0050bf83a
+      - TURN_TTL=${TURN_TTL:-86400}
+      # Hasło konta Weroniki Janeczek przy PIERWSZYM starcie (puste = domyślne z seed.ts).
+      - SEED_TUTOR_PASSWORD=${SEED_TUTOR_PASSWORD:-}
+      - RUN_SEED=${RUN_SEED:-true}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=matdraw
+      - MYSQL_USER=matdraw
+      - MYSQL_PASSWORD=e52b57cdddd7dd47054db54f299cebec
+      - MYSQL_ROOT_PASSWORD=e9f2b71afdbe2994ca2561f69e1475dc
+    volumes:
+      - matdraw-mysql:/var/lib/mysql
+    healthcheck:
+      # mysqladmin ping zwraca 0, gdy serwer działa (nawet bez poprawnych danych logowania).
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  # Serwer TURN/STUN – przekazuje połączenia WebRTC, gdy bezpośrednie P2P jest niemożliwe (NAT, sieci firmowe).
+  # Wymaga otwartych portów w firewallu serwera: 3478/udp, 3478/tcp, 49160-49200/udp.
+  coturn:
+    image: coturn/coturn:4.6
+    restart: unless-stopped
+    ports:
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+      - "49160-49200:49160-49200/udp"
+    command:
+      - -n
+      - --log-file=stdout
+      - --listening-port=3478
+      - --fingerprint
+      - --use-auth-secret
+      - --static-auth-secret=1f4c755969527267b501c149e93047e0db8b360e9a33a53956cf8fe0050bf83a
+      - --realm=matdraw.weblance-devs.pl
+      - --external-ip=${TURN_EXTERNAL_IP:?}
+      - --min-port=49160
+      - --max-port=49200
+      - --no-cli
+      - --no-tls
+      - --no-dtls
+      - --no-multicast-peers
+      - --denied-peer-ip=0.0.0.0-0.255.255.255
+      - --denied-peer-ip=10.0.0.0-10.255.255.255
+      - --denied-peer-ip=127.0.0.0-127.255.255.255
+      - --denied-peer-ip=169.254.0.0-169.254.255.255
+      - --denied-peer-ip=172.16.0.0-172.31.255.255
+      - --denied-peer-ip=192.168.0.0-192.168.255.255
+    exclude_from_hc: true
+
+volumes:
+  matdraw-mysql:

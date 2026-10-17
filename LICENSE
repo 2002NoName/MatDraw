@@ -1,0 +1,28 @@
+MatDraw – Licencja zastrzeżona (proprietary)
+
+Copyright (c) 2025 Michał Kozieński, Weblance.pl (https://weblance.pl)
+Wszelkie prawa zastrzeżone.
+
+1. Oprogramowanie MatDraw (kod źródłowy, aplikacja webowa, serwer,
+   dokumentacja i grafiki) jest własnością autorów: Michała Kozieńskiego oraz firmy Weblance.pl.
+
+2. Z oprogramowania mogą korzystać wyłącznie osoby upoważnione przez autorów, w szczególności
+   Weronika Janeczek (korepetytorka) oraz uczniowie, którym udostępniła ona dostęp do tablic
+   w ramach prowadzonych zajęć.
+
+3. Bez pisemnej zgody autorów zabronione jest w szczególności:
+   - kopiowanie, rozpowszechnianie, sprzedaż, najem lub udostępnianie oprogramowania osobom trzecim,
+   - modyfikowanie, dekompilowanie oraz tworzenie utworów zależnych,
+   - uruchamianie własnych instancji serwera lub publikowanie aplikacji w sklepach.
+
+4. Oprogramowanie jest dostarczane „tak jak jest” (AS IS), bez jakichkolwiek gwarancji.
+   Autorzy nie ponoszą odpowiedzialności za szkody wynikłe z jego używania, w granicach
+   dopuszczalnych przez prawo.
+
+5. Biblioteki zewnętrzne (open source) wykorzystane w projekcie podlegają własnym licencjom
+   (m.in. MIT, Apache-2.0) – ich wykaz znajduje się w plikach package.json / package-lock.json.
+
+6. Zestaw wzorów maturalnych zawarty w aplikacji został opracowany samodzielnie na podstawie
+   zakresu broszury CKE „Wybrane wzory matematyczne”. Na egzaminie obowiązuje oficjalna broszura CKE.
+
+Kontakt w sprawie licencji: Weblance.pl

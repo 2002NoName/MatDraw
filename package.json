@@ -1,0 +1,25 @@
+{
+  "name": "matdraw",
+  "private": true,
+  "version": "0.1.0",
+  "author": "Michał Kozieński, Weblance.pl",
+  "license": "UNLICENSED",
+  "description": "MatDraw – współdzielona tablica matematyczna (P2P WebRTC) dla korepetycji",
+  "workspaces": [
+    "packages/shared",
+    "apps/server",
+    "apps/client"
+  ],
+  "scripts": {
+    "build:shared": "npm run build -w @matdraw/shared",
+    "build": "npm run build:shared && npm run build -w @matdraw/server && npm run build -w @matdraw/client",
+    "dev:server": "npm run build:shared && npm run dev -w @matdraw/server",
+    "dev:client": "npm run dev -w @matdraw/client",
+    "start": "npm run start -w @matdraw/server",
+    "test": "npm run build:shared && npm run test -w @matdraw/server && npm run test -w @matdraw/client",
+    "typecheck": "npm run build:shared && npm run typecheck -w @matdraw/server && npm run typecheck -w @matdraw/client"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

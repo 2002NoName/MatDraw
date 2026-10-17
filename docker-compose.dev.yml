@@ -1,0 +1,40 @@
+# Usługi pomocnicze do pracy lokalnej / samodzielnego serwera: MySQL + serwer TURN (coturn).
+# Produkcja na Coolify: zobacz docker-compose.yml i docs/WDROZENIE.md.
+# Użycie: docker compose -f docker-compose.dev.yml up -d  (wcześniej zmień hasła/sekrety i adres IP)
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: matdraw
+      MYSQL_USER: matdraw
+      MYSQL_PASSWORD: zmien-haslo-bazy
+      MYSQL_ROOT_PASSWORD: zmien-haslo-root
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  coturn:
+    image: coturn/coturn:4.6
+    restart: unless-stopped
+    # TURN wymaga bezpośredniego dostępu do portów UDP – sieć hosta.
+    network_mode: host
+    command:
+      - -n
+      - --listening-port=3478
+      - --fingerprint
+      - --use-auth-secret
+      - --static-auth-secret=ZMIEN-NA-TEN-SAM-SEKRET-CO-TURN_SECRET
+      - --realm=matdraw
+      - --external-ip=ADRES.PUBLICZNY.IP
+      - --min-port=49160
+      - --max-port=49200
+      - --no-cli
+      - --no-multicast-peers
+      - --denied-peer-ip=10.0.0.0-10.255.255.255
+      - --denied-peer-ip=172.16.0.0-172.31.255.255
+      - --denied-peer-ip=192.168.0.0-192.168.255.255
+
+volumes:
+  mysql-data:
