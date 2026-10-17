@@ -35,6 +35,7 @@ export function DevPage() {
   const [ws, setWs] = useState<Run<WsTestResult>>(idle);
   const [gather, setGather] = useState<Run<GatherResult>>(idle);
   const [loop, setLoop] = useState<Run<LoopbackResult>>(idle);
+  const [loop2, setLoop2] = useState<Run<LoopbackResult>>(idle);
   const [stats, setStats] = useState<DevStatsResponse | null>(null);
   const [statsError, setStatsError] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -65,11 +66,17 @@ export function DevPage() {
   }, [ice, loadIce]);
   const runLoop = useCallback(async () => {
     setLoop({ running: true, result: null });
+    setLoop2({ running: true, result: null });
     const c = ice ?? (await loadIce());
-    setLoop({
-      running: false,
-      result: c && hasTurn(c) ? await turnLoopback(c.iceServers as RTCIceServer[]) : { ok: false, openMs: null, rttMs: null, stats: null, error: 'brak skonfigurowanego serwera TURN' },
-    });
+    if (!c || !hasTurn(c)) {
+      const none = { ok: false, openMs: null, rttMs: null, stats: null, error: 'brak skonfigurowanego serwera TURN' };
+      setLoop({ running: false, result: none });
+      setLoop2({ running: false, result: none });
+      return;
+    }
+    const servers = c.iceServers as RTCIceServer[];
+    setLoop({ running: false, result: await turnLoopback(servers, 15_000, 'all') });
+    setLoop2({ running: false, result: await turnLoopback(servers, 15_000, 'relay') });
   }, [ice, loadIce]);
   const loadStats = useCallback(async () => {
     try {
@@ -221,11 +228,15 @@ export function DevPage() {
 
           <section className="card">
             <h2>Test przekaźnika TURN (pętla zwrotna)</h2>
-            <p className="hint">Dwa połączenia WebRTC w tej karcie wymuszone na trasie przez TURN – dowodzi, że przekaźnik przenosi dane.</p>
-            {loop.running && <Row k="Stan" v="test…" />}
+            <p className="hint">
+              Dwa połączenia WebRTC w tej karcie z wymuszoną trasą przez TURN. Etap 1: przekaźnik → zwykły klient
+              (dowodzi, że TURN przenosi dane). Etap 2: obie strony przez TURN – przypadek, gdy obie osoby są za
+              restrykcyjnym NAT (sieć firmowa, LTE).
+            </p>
+            {(loop.running || loop2.running) && <Row k="Stan" v="test…" />}
             {loop.result && (
               <>
-                <Row k="Wynik" v={loop.result.ok ? 'OK ✓ – dane przeszły przez TURN' : `błąd: ${loop.result.error}`} tone={loop.result.ok ? 'good' : 'bad'} />
+                <Row k="TURN → klient" v={loop.result.ok ? 'OK ✓ – dane przeszły przez TURN' : `błąd: ${loop.result.error}`} tone={loop.result.ok ? 'good' : 'bad'} />
                 <Row k="Zestawienie" v={loop.result.openMs !== null ? `${loop.result.openMs} ms` : '—'} />
                 <Row k="RTT przez TURN" v={loop.result.rttMs !== null ? `${loop.result.rttMs} ms` : '—'} />
                 {loop.result.stats?.local && (
@@ -233,9 +244,20 @@ export function DevPage() {
                 )}
               </>
             )}
+            {loop2.result && (
+              <Row
+                k="TURN ↔ TURN"
+                v={
+                  loop2.result.ok
+                    ? `OK ✓ (${loop2.result.openMs} ms, RTT ${loop2.result.rttMs} ms)`
+                    : `błąd: ${loop2.result.error}${loop.result?.ok ? ' – TURN działa, ale serwer nie przekazuje ruchu do samego siebie (coturn powinien działać z network_mode: host)' : ''}`
+                }
+                tone={loop2.result.ok ? 'good' : loop.result?.ok ? 'warn' : 'bad'}
+              />
+            )}
             <div className="dev-actions">
-              <button onClick={() => void runLoop()} disabled={loop.running}>
-                {loop.running ? 'Testowanie…' : 'Testuj TURN'}
+              <button onClick={() => void runLoop()} disabled={loop.running || loop2.running}>
+                {loop.running || loop2.running ? 'Testowanie…' : 'Testuj TURN'}
               </button>
             </div>
           </section>

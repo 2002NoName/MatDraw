@@ -1002,6 +1002,8 @@ button.active {
 }
 .dev-page section.card {
   font-size: 0.85rem;
+  min-width: 0;
+  overflow-x: auto;
 }
 .dev-page h2 {
   margin: 0 0 8px;
@@ -1020,6 +1022,9 @@ button.active {
   text-align: left;
   padding: 3px 6px;
   border-bottom: 1px solid #eceff1;
+}
+.dev-page td.mono {
+  overflow-wrap: anywhere;
 }
 .dev-actions {
   display: flex;

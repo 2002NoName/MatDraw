@@ -246,8 +246,9 @@ Instrumentacja jest zawsze włączona i lekka (liczniki + bufor 200 zdarzeń):
   ping co 2 s, eksport raportu JSON do schowka. Dostępny dla obu ról.
 - **`/dev` – Panel developera** (`pages/DevPage.tsx`, `sync/connectivityTests.ts`): środowisko przeglądarki,
   `/api/health`, test WebSocket (czas zestawienia, RTT), konfiguracja ICE, **test zbierania kandydatów**
-  (host = LAN, srflx = STUN działa, relay = TURN działa) oraz **test pętli TURN** – dwa `RTCPeerConnection`
-  z `iceTransportPolicy: 'relay'`, które wymieniają dane wyłącznie przez przekaźnik. Korepetytorka widzi
+  (host = LAN, srflx = STUN działa, relay = TURN działa) oraz **test pętli TURN** w dwóch etapach – dwa
+  `RTCPeerConnection`, z których jeden ma `iceTransportPolicy: 'relay'`: (1) przekaźnik → zwykły klient,
+  (2) przekaźnik ↔ przekaźnik (obie strony `relay`; wymaga coturn w sieci hosta). Korepetytorka widzi
   dodatkowo `GET /api/dev/stats` (odświeżanie co 3 s): proces, pamięć, konfiguracja TURN, liczniki
   sygnalizacji i aktywne tablice z uczestnikami.
 

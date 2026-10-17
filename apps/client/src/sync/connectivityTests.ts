@@ -119,13 +119,18 @@ export interface LoopbackResult {
 }
 
 /**
- * Pełny test przekaźnika: dwa połączenia RTCPeerConnection w tej samej karcie wymuszone na
- * `iceTransportPolicy: 'relay'` – dane muszą przejść przez serwer TURN w obie strony.
+ * Pełny test przekaźnika: dwa połączenia RTCPeerConnection w tej samej karcie. Strona A jest
+ * wymuszona na `iceTransportPolicy: 'relay'` – dane muszą przejść przez serwer TURN.
+ * `peerPolicy: 'all'` – druga strona łączy się zwykłym adresem (relay → klient, typowy przypadek),
+ * `peerPolicy: 'relay'` – obie strony przez TURN (relay ↔ relay, wymaga poprawnej sieci coturn).
  */
-export async function turnLoopback(iceServers: RTCIceServer[], timeoutMs = 15_000): Promise<LoopbackResult> {
-  const cfg: RTCConfiguration = { iceServers, iceTransportPolicy: 'relay' };
-  const a = new RTCPeerConnection(cfg);
-  const b = new RTCPeerConnection(cfg);
+export async function turnLoopback(
+  iceServers: RTCIceServer[],
+  timeoutMs = 15_000,
+  peerPolicy: RTCIceTransportPolicy = 'relay',
+): Promise<LoopbackResult> {
+  const a = new RTCPeerConnection({ iceServers, iceTransportPolicy: 'relay' });
+  const b = new RTCPeerConnection({ iceServers, iceTransportPolicy: peerPolicy });
   const started = performance.now();
   const res: LoopbackResult = { ok: false, openMs: null, rttMs: null, stats: null };
   a.onicecandidate = (e) => e.candidate && void b.addIceCandidate(e.candidate).catch(() => {});

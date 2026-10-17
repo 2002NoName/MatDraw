@@ -94,7 +94,7 @@ sequenceDiagram
   „Kopiuj raport JSON” (do zgłoszenia problemu).
 - **Panel developera** `/dev` (link „Diagnostyka” na liście tablic): testy przeglądarki, API, WebSocket,
   zbierania kandydatów (czy działa STUN i TURN) i **test pętli przez TURN** (czy przekaźnik faktycznie
-  przenosi dane). Korepetytorka widzi też **statystyki serwera na żywo**: czas działania, pamięć,
+  przenosi dane – do zwykłego klienta oraz między dwiema osobami, które obie łączą się przez TURN). Korepetytorka widzi też **statystyki serwera na żywo**: czas działania, pamięć,
   konfigurację TURN, liczniki sygnalizacji oraz aktywne tablice z osobami i ich ruchem.
 - Równoczesna edycja tego samego miejsca jest bezkonfliktowa (CRDT).
 - Utrata połączenia: aplikacja łączy się ponownie automatycznie, a zmiany wykonane w tym czasie

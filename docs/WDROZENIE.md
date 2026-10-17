@@ -83,7 +83,7 @@ sequenceDiagram
    startu. Zmiana `JWT_SECRET` wyloguje wszystkich użytkowników. Nowe wartości można wygenerować np.
    `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 6. Zakładka **Environment Variables** w Coolify – nic nie jest wymagane:
-   - publiczny IPv4 serwera dla coturn (`--external-ip=54.38.53.158`, adres z rekordu A
+   - publiczny IPv4 serwera dla coturn (`--listening-ip`/`--relay-ip=54.38.53.158`, adres z rekordu A
      `matdraw.weblance-devs.pl`) jest wpisany na stałe w compose – zmień go tylko po przeniesieniu na inny serwer,
    - opcjonalnie: `SEED_TUTOR_PASSWORD` (hasło konta Weroniki Janeczek przy pierwszym starcie),
      `TUTOR_REGISTRATION_SECRET` (nadpisuje kod z compose), `STUN_URLS`, `TURN_URLS`,
@@ -244,10 +244,14 @@ jeśli przeglądarka ma jeszcze worker ze starszej wersji (PWA), aplikacja usuwa
    (np. Wi‑Fi i LTE), utwórz tablicę, dołącz kodem.
 3. W nagłówku tablicy ikona przy uczestniku powinna pokazywać „połączenie bezpośrednie (P2P)”
    lub „połączenie przez serwer TURN”. „Brak P2P – synchronizacja przez serwer” oznacza, że TURN
-   nie jest dostępny – sprawdź `TURN_URLS`, `TURN_SECRET`, porty UDP i `--external-ip` coturn
+   nie jest dostępny – sprawdź `TURN_URLS`, `TURN_SECRET`, porty UDP i `--relay-ip` coturn
    (test: <https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/>).
 4. Wbudowany **panel developera**: zaloguj się jako korepetytorka, otwórz `https://matdraw.weblance-devs.pl/dev`
    i kliknij **Uruchom wszystkie testy** – oczekiwane: API i WebSocket „OK”, „srflx – STUN działa ✓”,
-   „relay – TURN działa ✓” oraz test pętli TURN „OK ✓ – dane przeszły przez TURN”. Sekcja „Serwer – na żywo”
+   „relay – TURN działa ✓” oraz w teście pętli TURN: „TURN → klient: OK ✓” i „TURN ↔ TURN: OK ✓”.
+   Jeśli działa tylko „TURN → klient”, coturn nie przekazuje ruchu do własnego IP – musi działać z
+   `network_mode: host` oraz `--listening-ip`/`--relay-ip` = publiczny IPv4 przypisany do interfejsu
+   serwera (`ip -4 addr`). Przy `network_mode: host` reguły zapory hosta (np. `ufw`) dotyczą coturn –
+   zezwól na `3478/udp`, `3478/tcp`, `49160:49200/udp`. Sekcja „Serwer – na żywo”
    pokazuje konfigurację TURN (`turnAuth: secret`), liczniki i aktywne tablice. Na samej tablicy panel
    `Ctrl+Shift+D` pokazuje trasę każdego połączenia (P2P / TURN / serwer) w czasie rzeczywistym.
