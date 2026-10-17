@@ -66,7 +66,9 @@ sequenceDiagram
    **Build Pack: Docker Compose**, *Docker Compose Location*: `/docker-compose.yml`.
 4. W konfiguracji usługi **matdraw** ustaw domenę: `https://matdraw.weblance-devs.pl:4000`
    (`:4000` to port wewnętrzny kontenera – Coolify/Traefik wystawia aplikację na 443 z certyfikatem
-   Let's Encrypt; WebSocket `/ws` działa bez dodatkowej konfiguracji).
+   Let's Encrypt; WebSocket `/ws` działa bez dodatkowej konfiguracji). Pole domeny dla **coturn** zostaw
+   puste. **Po zapisaniu domeny zawsze kliknij *Redeploy*** – etykiety Traefika powstają dopiero przy
+   wdrożeniu. Objawy braku trasy: `404 page not found` po HTTP i `no available server` (503) po HTTPS.
 5. **Sekrety są już wpisane w [`docker-compose.yml`](../docker-compose.yml)** (wygenerowane losowo):
 
    | Sekret | Gdzie w compose | Wartość |
@@ -81,8 +83,8 @@ sequenceDiagram
    startu. Zmiana `JWT_SECRET` wyloguje wszystkich użytkowników. Nowe wartości można wygenerować np.
    `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 6. Zakładka **Environment Variables** w Coolify – nic nie jest wymagane:
-   - `TURN_EXTERNAL_IP` – publiczny IPv4 serwera dla coturn; domyślnie `54.38.53.158`
-     (adres z rekordu A `matdraw.weblance-devs.pl`) – zmień tylko po przeniesieniu na inny serwer,
+   - publiczny IPv4 serwera dla coturn (`--external-ip=54.38.53.158`, adres z rekordu A
+     `matdraw.weblance-devs.pl`) jest wpisany na stałe w compose – zmień go tylko po przeniesieniu na inny serwer,
    - opcjonalnie: `SEED_TUTOR_PASSWORD` (hasło konta Weroniki Janeczek przy pierwszym starcie),
      `TUTOR_REGISTRATION_SECRET` (nadpisuje kod z compose), `STUN_URLS`, `TURN_URLS`,
      `JWT_EXPIRES_IN`, `TURN_TTL`, `RUN_SEED`.
