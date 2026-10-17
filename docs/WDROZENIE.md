@@ -80,11 +80,16 @@ sequenceDiagram
    **Nie zmieniaj hasła MySQL po pierwszym wdrożeniu** – baza w wolumenie zachowuje hasło z pierwszego
    startu. Zmiana `JWT_SECRET` wyloguje wszystkich użytkowników. Nowe wartości można wygenerować np.
    `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
-6. Zakładka **Environment Variables** w Coolify:
-   - **`TURN_EXTERNAL_IP`** – **wymagane**: publiczny IPv4 serwera (bez niego coturn nie wystartuje),
+6. Zakładka **Environment Variables** w Coolify – nic nie jest wymagane:
+   - `TURN_EXTERNAL_IP` – publiczny IPv4 serwera dla coturn; domyślnie `54.38.53.158`
+     (adres z rekordu A `matdraw.weblance-devs.pl`) – zmień tylko po przeniesieniu na inny serwer,
    - opcjonalnie: `SEED_TUTOR_PASSWORD` (hasło konta Weroniki Janeczek przy pierwszym starcie),
      `TUTOR_REGISTRATION_SECRET` (nadpisuje kod z compose), `STUN_URLS`, `TURN_URLS`,
      `JWT_EXPIRES_IN`, `TURN_TTL`, `RUN_SEED`.
+
+   > Ostrzeżenie Coolify *„Make sure you have added the DNS records correctly … → host.docker.internal”*
+   > przy serwerze `localhost` jest fałszywym alarmem (Coolify sprawdza DNS z wnętrza kontenera).
+   > Wystarczy rekord A `matdraw.weblance-devs.pl → 54.38.53.158`; komunikat można zignorować.
 7. **Deploy.** Po zakończeniu: `https://matdraw.weblance-devs.pl/api/health` → `{"ok":true}`.
 8. Zaloguj się kontem korepetytorki (patrz niżej), zmień hasło na stronie **Moje konto** i przejdź
    weryfikację z [rozdziału 4](#4-weryfikacja-wdrożenia).
