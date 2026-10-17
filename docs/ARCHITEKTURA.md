@@ -382,11 +382,14 @@ flowchart TD
 | `board/render.tsx`                     | Renderowanie elementów (SVG: kreski, figury, bryły, wykresy, obrazy; HTML: KaTeX)              |
 | `board/geometry.ts`, `board/solids.ts` | Geometria 2D, rzutowanie brył 3D z ukrywaniem krawędzi niewidocznych                           |
 | `board/images.ts`                      | Wczytywanie, zmniejszanie i kompresja obrazów                                                  |
-| `cke/formulas.ts`                      | Zestaw wzorów maturalnych CKE (LaTeX, działy, wyszukiwanie)                                    |
-| `cke/FormulaLibrary.tsx`               | Panel / strona wzorów z przeciąganiem na tablicę                                               |
+| `board/ColorPicker.tsx`, `board/color.ts` | Własne okno wyboru koloru (HSV, HEX, paleta, ostatnie kolory) i przeliczenia kolorów        |
+| `cke/formulas.ts`                      | Zestaw wzorów maturalnych CKE (LaTeX, działy, tablica sin/cos/tg, wyszukiwanie)                |
+| `cke/formulaInfo.ts`                   | Opisy wzorów: znaczenie, zastosowanie, przykład (tekst z wstawkami `$…$` renderowanymi KaTeX) |
+| `cke/FormulaLibrary.tsx`               | Panel / strona wzorów z przeciąganiem na tablicę i rozwijanymi opisami                         |
 | `cke/texToSvg.ts`                      | LaTeX → samodzielny obraz SVG (MathJax, ładowany leniwie)                                      |
 | `math/expr.ts`                         | Bezpieczny parser wyrażeń do wykresów (bez `eval`)                                             |
 | `recognition/`                         | Rozpoznawanie pisma (patrz niżej)                                                              |
+| `components/Modal.tsx`, `components/dialogs.tsx` | Okno modalne (stos – Esc zamyka najwyższe) i `useDialogs()`: `confirm` / `prompt` w stylu aplikacji zamiast systemowych |
 | `pages/`, `components/`, `dialogs/`    | Ekrany i okna dialogowe                                                                        |
 
 ### 5.1 Pióro, dotyk, nacisk
@@ -494,7 +497,10 @@ synchronizuje się i zapisuje tak samo jak inne elementy. Skalowanie zachowuje p
 ### 5.6 Wzory maturalne CKE
 
 Zestaw wzorów (`cke/formulas.ts`) odpowiada układowi broszury CKE „Wybrane wzory matematyczne”
-(15 działów, oznaczenie wzorów tylko dla poziomu rozszerzonego). Panel jest dostępny na tablicy (przycisk
+(15 działów, oznaczenie wzorów tylko dla poziomu rozszerzonego) i jest uzupełniony o dział 16 – tablicę
+wartości sin/cos/tg dla 0°–90°, generowaną funkcją `trigTableRows` (4 miejsca po przecinku, przecinek
+dziesiętny). Opisy wzorów (`cke/formulaInfo.ts`, klucz = `id` wzoru) są pokrywane testem – każdy wzór musi
+mieć opis, a wszystkie wstawki `$…$` muszą renderować się w KaTeX. Panel jest dostępny na tablicy (przycisk
 „Wzory maturalne CKE” – także w trybie tylko do podglądu) oraz jako osobna strona `/wzory`.
 
 ```mermaid

@@ -166,17 +166,29 @@ Zestaw wzorów, z których uczniowie korzystają na maturze (wg broszury CKE „
 3. **Przeciągnij wzór na tablicę** – myszą, rysikiem lub palcem. Na iPadzie przeciągaj **w bok**
    (ruch w górę/dół przewija listę). Wzór pojawi się jako obraz (kartka z nazwą i wzorem) w miejscu upuszczenia.
 4. Albo kliknij **+** przy wzorze – zostanie wstawiony na środek widoku.
+5. Przycisk **?** przy wzorze rozwija **opis**: co oznacza wzór, kiedy i jak go użyć oraz rozwiązany przykład.
+
+Na końcu listy jest dział **16. Tablica wartości funkcji trygonometrycznych** – sin, cos i tg dla kątów
+0°–90° (jak w tablicach maturalnych). Wartość odczytujesz w wierszu kąta; znając wartość funkcji, znajdź
+najbliższą liczbę w kolumnie i odczytaj kąt. Tablicę też można przeciągnąć na tablicę jako obraz.
 
 Wstawiony wzór widzą wszyscy uczestnicy – można go przesunąć, powiększyć, dopisać obok przykład
 lub obrysować piórem fragment, który omawiamy.
 
 Wzory można też przeglądać bez otwierania tablicy: link **Wzory CKE** w górnym pasku listy tablic
 (strona `/wzory`). Uczeń z prawem tylko do podglądu może przeglądać wzory, ale nie wstawia ich na tablicę.
+Na stronie `/wzory` **kliknij wzór**, aby rozwinąć opis z przykładem; ponowne kliknięcie go zwija.
 
 ### Górny pasek opcji
 
 Cofnij / ponów, kolory (7 + dowolny), grubości, wybór figury/bryły, **tylko rysik**, tło
 (gładkie, kratka, linie, kropki), **wyczyść tablicę** (z potwierdzeniem; można cofnąć).
+
+**Własny kolor:** kliknij ostatnie, tęczowe kółko palety. W oknie wybierz kolor w dużym kwadracie
+(nasycenie i jasność) i na pasku odcienia, wpisz kod **HEX** (np. `#1971c2`) i zatwierdź Enterem albo
+kliknij gotowy kolor z palety lub z listy *Ostatnio używane* (dwuklik wybiera od razu). Lewa połówka
+podglądu to poprzedni kolor – kliknij ją, aby do niego wrócić. **Wybierz** zatwierdza, **Anuluj** lub Esc
+zamyka okno bez zmian.
 
 **Tylko rysik** – gdy włączone, rysuje wyłącznie rysik, a dotyk palcem/dłonią przesuwa widok.
 Opcja włącza się sama po pierwszym użyciu rysika (Apple Pencil, Surface Pen) – dzięki temu

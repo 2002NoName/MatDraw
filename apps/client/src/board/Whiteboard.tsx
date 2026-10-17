@@ -18,6 +18,7 @@ import { HtmlElementView, StrokeView, SvgElementView } from './render';
 import { DEFAULT_ROT_X, DEFAULT_ROT_Y, clampTilt } from './solids';
 import { OptionsBar, ToolRail, type Tool, type ToolOptions } from './Toolbar';
 import { Icon, IconButton } from '../components/icons';
+import { useDialogs } from '../components/dialogs';
 import { FormulaDialog, TextDialog } from '../dialogs/FormulaDialog';
 import { PlotDialog, type PlotParams } from '../dialogs/PlotDialog';
 import { RecognizeDialog } from '../dialogs/RecognizeDialog';
@@ -136,6 +137,7 @@ export function Whiteboard({
   channel: EphemeralChannel;
   peers: PeerInfo[];
 }) {
+  const dialogs = useDialogs();
   const containerRef = useRef<HTMLDivElement>(null);
   const [view, setViewState] = useState<View>({ scale: 1, ox: 0, oy: 0 });
   const viewRef = useRef(view);
@@ -831,7 +833,7 @@ export function Whiteboard({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === ' ' && !isTyping(e.target)) spaceDown.current = e.type === 'keydown';
-      if (e.type !== 'keydown' || dialog || isTyping(e.target) || readOnly) return;
+      if (e.type !== 'keydown' || dialog || isTyping(e.target) || readOnly || document.querySelector('.modal-backdrop')) return;
       const mod = e.ctrlKey || e.metaKey;
       if (mod && e.key.toLowerCase() === 'z') {
         e.preventDefault();
@@ -1057,8 +1059,14 @@ export function Whiteboard({
         onUndo={() => model.undo()}
         onRedo={() => model.redo()}
         onTrain={() => setDialog({ kind: 'training' })}
-        onClear={() => {
-          if (confirm('Wyczyścić całą tablicę? Operację można cofnąć (Ctrl+Z).')) {
+        onClear={async () => {
+          const ok = await dialogs.confirm({
+            title: 'Wyczyść tablicę',
+            message: 'Wyczyścić całą tablicę u wszystkich uczestników? Operację można cofnąć (Ctrl+Z).',
+            confirmLabel: 'Wyczyść',
+            danger: true,
+          });
+          if (ok) {
             model.stopCapturing();
             model.clear();
           }

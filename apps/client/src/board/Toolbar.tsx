@@ -1,5 +1,8 @@
 import type { BoardBackground, Shape2DKind, Solid3DKind } from '@matdraw/shared';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { IconButton, type IconName } from '../components/icons';
+import { ColorPickerDialog } from './ColorPicker';
 import { SOLID_LABELS } from './solids';
 
 export type Tool = 'select' | 'pan' | 'pen' | 'highlighter' | 'eraser' | 'shape' | 'solid' | 'text' | 'formula' | 'plot' | 'recognize';
@@ -104,6 +107,7 @@ export function OptionsBar({
   readOnly: boolean;
 }) {
   const showColor = !readOnly && tool !== 'pan' && tool !== 'eraser' && tool !== 'recognize';
+  const [picker, setPicker] = useState(false);
   return (
     <div className="options-bar" onPointerDown={(e) => e.stopPropagation()}>
       {!readOnly && (
@@ -124,9 +128,16 @@ export function OptionsBar({
               onClick={() => onColor(c)}
             />
           ))}
-          <label className="swatch custom" title="Własny kolor" style={{ background: COLORS.includes(opts.color) ? undefined : opts.color }}>
-            <input type="color" value={opts.color} onChange={(e) => onColor(e.target.value)} />
-          </label>
+          <button
+            type="button"
+            className={`swatch custom${COLORS.includes(opts.color) ? '' : ' active'}`}
+            title="Własny kolor…"
+            aria-label="Własny kolor"
+            style={{ background: COLORS.includes(opts.color) ? undefined : opts.color }}
+            onClick={() => setPicker(true)}
+          />
+          {picker &&
+            createPortal(<ColorPickerDialog initial={opts.color} onPick={onColor} onClose={() => setPicker(false)} />, document.body)}
         </div>
       )}
       {tool === 'pen' && (

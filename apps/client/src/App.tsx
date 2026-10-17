@@ -8,6 +8,7 @@ import { BoardPage } from './pages/BoardPage';
 import { FormulasPage } from './pages/FormulasPage';
 import { AccountPage } from './pages/AccountPage';
 import { DevPage } from './pages/DevPage';
+import { DialogProvider } from './components/dialogs';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -19,6 +20,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 export function App() {
   return (
     <AuthProvider>
+      <DialogProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -66,6 +68,7 @@ export function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </DialogProvider>
     </AuthProvider>
   );
 }

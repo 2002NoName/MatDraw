@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { formatInviteCode, type BoardDetails } from '@matdraw/shared';
 import { api } from '../api/client';
 import { Modal } from './Modal';
+import { useDialogs } from './dialogs';
 
 function inviteStatus(i: NonNullable<BoardDetails['invites']>[number]) {
   if (i.revoked) return 'unieważniony';
@@ -12,6 +13,7 @@ function inviteStatus(i: NonNullable<BoardDetails['invites']>[number]) {
 
 /** Zarządzanie tablicą (tylko korepetytorka): kody zaproszeń i uczestnicy. */
 export function BoardManagePanel({ boardId, onClose }: { boardId: string; onClose(): void }) {
+  const dialogs = useDialogs();
   const [board, setBoard] = useState<BoardDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [label, setLabel] = useState('');
@@ -164,9 +166,18 @@ export function BoardManagePanel({ boardId, onClose }: { boardId: string; onClos
                       </label>
                       <button
                         className="danger"
-                        onClick={() => {
-                          if (confirm(`Usunąć ${m.name} z tablicy? Zostanie natychmiast rozłączony(a).`))
-                            void run(() => api.removeMember(boardId, m.userId));
+                        onClick={async () => {
+                          const ok = await dialogs.confirm({
+                            title: 'Usuń uczestnika',
+                            message: (
+                              <>
+                                Usunąć <strong>{m.name}</strong> z tablicy? Zostanie natychmiast rozłączony(a); powrót będzie wymagał nowego kodu.
+                              </>
+                            ),
+                            confirmLabel: 'Usuń z tablicy',
+                            danger: true,
+                          });
+                          if (ok) void run(() => api.removeMember(boardId, m.userId));
                         }}
                       >
                         Usuń

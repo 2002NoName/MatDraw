@@ -1,5 +1,6 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Modal } from '../components/Modal';
+import { useDialogs } from '../components/dialogs';
 import { TRAINABLE_SYMBOLS } from '../recognition/glyphs';
 import type { Pt } from '../recognition/pdollar';
 import { addUserSample, clearUserSamples, loadUserSamples } from '../recognition/userTemplates';
@@ -15,6 +16,7 @@ function countSamples() {
 
 /** Nauka pisma: użytkownik rysuje wybrany znak, próbki trafiają do lokalnych wzorców (localStorage). */
 export function TrainingDialog({ onClose }: { onClose(): void }) {
+  const dialogs = useDialogs();
   const [symbol, setSymbol] = useState(TRAINABLE_SYMBOLS[0]!);
   const [strokes, setStrokes] = useState<Pt[][]>([]);
   const [counts, setCounts] = useState(countSamples);
@@ -97,8 +99,14 @@ export function TrainingDialog({ onClose }: { onClose(): void }) {
           </button>
           <button
             className="danger"
-            onClick={() => {
-              if (confirm('Usunąć wszystkie zapisane próbki pisma?')) {
+            onClick={async () => {
+              const ok = await dialogs.confirm({
+                title: 'Usuń próbki pisma',
+                message: 'Usunąć wszystkie zapisane próbki pisma? Rozpoznawanie wróci do wzorców wbudowanych.',
+                confirmLabel: 'Usuń próbki',
+                danger: true,
+              });
+              if (ok) {
                 clearUserSamples();
                 setCounts({});
               }

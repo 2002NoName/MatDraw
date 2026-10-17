@@ -12,7 +12,10 @@ Współdzielona **tablica matematyczna** dla korepetycji – **aplikacja webowa*
 - **centralny zapis** tablic na serwerze (MySQL), konta **korepetytorki** i **ucznia**,
 - **obrazy** na tablicy (plik, aparat iPada, schowek Ctrl+V, przeciągnięcie pliku),
 - **tablice wzorów maturalnych CKE** dostępne dla wszystkich – wzór przeciąga się na tablicę jako obraz
-  (panel na tablicy i strona `/wzory`),
+  (panel na tablicy i strona `/wzory`); każdy wzór ma rozwijany **opis z zastosowaniem i przykładem**,
+  w zestawie jest też **tablica wartości sin/cos/tg** dla kątów 0°–90°,
+- **własne okna aplikacji** zamiast systemowych (potwierdzenia, zmiana nazwy, **wybór koloru** z paletą,
+  suwakami HSV, polem HEX i ostatnio używanymi kolorami),
 - strona **Moje konto** (`/konto`) – zmiana widocznej nazwy, imienia i nazwiska, e‑maila i hasła
   (dla korepetytorki i ucznia),
 - **kursory uczestników jak w Figmie** – każda osoba ma swój kolor (korepetytorka różowy, uczeń niebieski)

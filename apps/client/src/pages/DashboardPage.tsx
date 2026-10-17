@@ -5,9 +5,11 @@ import { api } from '../api/client';
 import { useAuth } from '../api/auth';
 import { BoardManagePanel } from '../components/BoardManagePanel';
 import { AppFooter } from '../components/AppFooter';
+import { useDialogs } from '../components/dialogs';
 
 export function DashboardPage() {
   const { user, signOut } = useAuth();
+  const dialogs = useDialogs();
   const navigate = useNavigate();
   const isTutor = user?.role === 'TUTOR';
   const [boards, setBoards] = useState<BoardSummary[] | null>(null);
@@ -123,17 +125,33 @@ export function DashboardPage() {
                     <>
                       <button onClick={() => setManage(b.id)}>Uczestnicy</button>
                       <button
-                        onClick={() => {
-                          const t = prompt('Nowa nazwa tablicy', b.title);
-                          if (t?.trim()) void run(() => api.renameBoard(b.id, t.trim()));
+                        onClick={async () => {
+                          const t = await dialogs.prompt({
+                            title: 'Zmień nazwę tablicy',
+                            label: 'Nowa nazwa',
+                            defaultValue: b.title,
+                            maxLength: 200,
+                            validate: (v) => (v ? (v === b.title ? 'Nazwa się nie zmieniła.' : null) : 'Nazwa nie może być pusta.'),
+                          });
+                          if (t) void run(() => api.renameBoard(b.id, t));
                         }}
                       >
                         Zmień nazwę
                       </button>
                       <button
                         className="danger"
-                        onClick={() => {
-                          if (confirm(`Usunąć tablicę „${b.title}”? Tej operacji nie można cofnąć.`)) void run(() => api.deleteBoard(b.id));
+                        onClick={async () => {
+                          const ok = await dialogs.confirm({
+                            title: 'Usuń tablicę',
+                            message: (
+                              <>
+                                Usunąć tablicę <strong>„{b.title}”</strong>? Tej operacji nie można cofnąć.
+                              </>
+                            ),
+                            confirmLabel: 'Usuń tablicę',
+                            danger: true,
+                          });
+                          if (ok) void run(() => api.deleteBoard(b.id));
                         }}
                       >
                         Usuń
@@ -142,8 +160,18 @@ export function DashboardPage() {
                   ) : (
                     <button
                       className="danger"
-                      onClick={() => {
-                        if (confirm(`Opuścić tablicę „${b.title}”? Aby wrócić, potrzebny będzie nowy kod.`)) void run(() => api.leaveBoard(b.id));
+                      onClick={async () => {
+                        const ok = await dialogs.confirm({
+                          title: 'Opuść tablicę',
+                          message: (
+                            <>
+                              Opuścić tablicę <strong>„{b.title}”</strong>? Aby wrócić, potrzebny będzie nowy kod.
+                            </>
+                          ),
+                          confirmLabel: 'Opuść',
+                          danger: true,
+                        });
+                        if (ok) void run(() => api.leaveBoard(b.id));
                       }}
                     >
                       Opuść

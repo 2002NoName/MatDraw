@@ -16,6 +16,33 @@ export interface CkeSection {
   items: CkeFormula[];
 }
 
+/** Wartość z dokładnością do 4 miejsc po przecinku, z przecinkiem dziesiętnym jak w tablicach CKE. */
+export function fmt4(x: number): string {
+  const s = (Math.abs(x) < 5e-5 ? 0 : x).toFixed(4);
+  return s.replace('.', '{,}');
+}
+
+/** Tablica sin/cos/tg dla kątów całkowitych od `from`° do `to`° (jak w broszurze CKE). */
+export function trigTableRows(from: number, to: number): { deg: number; sin: string; cos: string; tg: string }[] {
+  const rows = [];
+  for (let d = from; d <= to; d++) {
+    const r = (d * Math.PI) / 180;
+    rows.push({ deg: d, sin: fmt4(Math.sin(r)), cos: fmt4(Math.cos(r)), tg: d === 90 ? '\\text{—}' : fmt4(Math.tan(r)) });
+  }
+  return rows;
+}
+
+function trigTable(id: string, from: number, to: number): CkeFormula {
+  const rows = trigTableRows(from, to)
+    .map((r) => `${r.deg}^\\circ & ${r.sin} & ${r.cos} & ${r.tg}`)
+    .join(' \\\\ ');
+  return {
+    id,
+    title: `Tablica wartości sin, cos, tg: ${from}°–${to}°`,
+    latex: `\\begin{array}{c|ccc} \\alpha & \\sin \\alpha & \\cos \\alpha & \\tg \\alpha \\\\ \\hline ${rows} \\end{array}`,
+  };
+}
+
 export const CKE_SECTIONS: CkeSection[] = [
   {
     id: 'abs',
@@ -110,7 +137,8 @@ export const CKE_SECTIONS: CkeSection[] = [
       { id: 'trig-one', title: 'Jedynka trygonometryczna', latex: '\\sin^2 \\alpha + \\cos^2 \\alpha = 1' },
       { id: 'trig-tg', title: 'Tangens', latex: '\\tg \\alpha = \\frac{\\sin \\alpha}{\\cos \\alpha} \\qquad (\\cos \\alpha \\ne 0)' },
       { id: 'trig-reduce', title: 'Wzory redukcyjne (wybrane)', latex: '\\begin{gathered} \\sin(90^\\circ - \\alpha) = \\cos \\alpha \\qquad \\cos(90^\\circ - \\alpha) = \\sin \\alpha \\\\ \\sin(180^\\circ - \\alpha) = \\sin \\alpha \\qquad \\cos(180^\\circ - \\alpha) = -\\cos \\alpha \\end{gathered}' },
-      { id: 'trig-values', title: 'Wartości dla kątów 30°, 45°, 60°', latex: '\\begin{array}{c|ccc} \\alpha & 30^\\circ & 45^\\circ & 60^\\circ \\\\ \\hline \\sin \\alpha & \\frac{1}{2} & \\frac{\\sqrt{2}}{2} & \\frac{\\sqrt{3}}{2} \\\\ \\cos \\alpha & \\frac{\\sqrt{3}}{2} & \\frac{\\sqrt{2}}{2} & \\frac{1}{2} \\\\ \\tg \\alpha & \\frac{\\sqrt{3}}{3} & 1 & \\sqrt{3} \\end{array}' },
+      { id: 'trig-values', title: 'Wartości dla kątów 0°, 30°, 45°, 60°, 90°', latex: '\\begin{array}{c|ccccc} \\alpha & 0^\\circ & 30^\\circ & 45^\\circ & 60^\\circ & 90^\\circ \\\\ \\hline \\sin \\alpha & 0 & \\frac{1}{2} & \\frac{\\sqrt{2}}{2} & \\frac{\\sqrt{3}}{2} & 1 \\\\ \\cos \\alpha & 1 & \\frac{\\sqrt{3}}{2} & \\frac{\\sqrt{2}}{2} & \\frac{1}{2} & 0 \\\\ \\tg \\alpha & 0 & \\frac{\\sqrt{3}}{3} & 1 & \\sqrt{3} & \\text{—} \\end{array}' },
+      { id: 'trig-values-obtuse', title: 'Wartości dla kątów 120°, 135°, 150°, 180°', latex: '\\begin{array}{c|cccc} \\alpha & 120^\\circ & 135^\\circ & 150^\\circ & 180^\\circ \\\\ \\hline \\sin \\alpha & \\frac{\\sqrt{3}}{2} & \\frac{\\sqrt{2}}{2} & \\frac{1}{2} & 0 \\\\ \\cos \\alpha & -\\frac{1}{2} & -\\frac{\\sqrt{2}}{2} & -\\frac{\\sqrt{3}}{2} & -1 \\\\ \\tg \\alpha & -\\sqrt{3} & -1 & -\\frac{\\sqrt{3}}{3} & 0 \\end{array}' },
       { id: 'trig-sum', title: 'Sinus i cosinus sumy i różnicy kątów', latex: '\\begin{gathered} \\sin(\\alpha \\pm \\beta) = \\sin \\alpha \\cos \\beta \\pm \\cos \\alpha \\sin \\beta \\\\ \\cos(\\alpha \\pm \\beta) = \\cos \\alpha \\cos \\beta \\mp \\sin \\alpha \\sin \\beta \\end{gathered}', ext: true },
       { id: 'trig-tgsum', title: 'Tangens sumy i różnicy kątów', latex: '\\tg(\\alpha \\pm \\beta) = \\frac{\\tg \\alpha \\pm \\tg \\beta}{1 \\mp \\tg \\alpha \\tg \\beta}', ext: true },
       { id: 'trig-double', title: 'Funkcje kąta podwojonego', latex: '\\begin{gathered} \\sin 2\\alpha = 2 \\sin \\alpha \\cos \\alpha \\\\ \\cos 2\\alpha = \\cos^2 \\alpha - \\sin^2 \\alpha = 2\\cos^2 \\alpha - 1 = 1 - 2\\sin^2 \\alpha \\end{gathered}', ext: true },
@@ -216,6 +244,15 @@ export const CKE_SECTIONS: CkeSection[] = [
       { id: 'deriv-chain', title: 'Pochodna funkcji złożonej', latex: "\\big(g(f(x))\\big)' = g'(f(x)) \\cdot f'(x)", ext: true },
       { id: 'deriv-basic', title: 'Pochodne funkcji elementarnych', latex: "\\begin{gathered} (x^a)' = a x^{a-1}, \\qquad (\\sqrt{x})' = \\frac{1}{2\\sqrt{x}} \\\\ (\\sin x)' = \\cos x, \\qquad (\\cos x)' = -\\sin x, \\qquad (\\tg x)' = \\frac{1}{\\cos^2 x} \\end{gathered}", ext: true },
       { id: 'tangent', title: 'Równanie stycznej do wykresu', latex: "y = f'(x_0)(x - x_0) + f(x_0)", ext: true },
+    ],
+  },
+  {
+    id: 'trig-table',
+    title: '16. Tablica wartości funkcji trygonometrycznych',
+    items: [
+      trigTable('trig-table-1', 0, 30),
+      trigTable('trig-table-2', 31, 60),
+      trigTable('trig-table-3', 61, 90),
     ],
   },
 ];

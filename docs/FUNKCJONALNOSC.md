@@ -112,7 +112,7 @@ sequenceDiagram
 |---|---|
 | Zaznaczanie (V) | Zaznaczanie kliknięciem lub prostokątem, przesuwanie, skalowanie (uchwyt), obracanie brył 3D, duplikowanie, kolejność, usuwanie |
 | Przesuwanie widoku (H) | Przewijanie tablicy (również spacja + przeciągnięcie, dwa palce, kółko myszy) |
-| Pióro (P) | Rysowanie z siłą nacisku, 3 grubości, 7 kolorów + dowolny |
+| Pióro (P) | Rysowanie z siłą nacisku, 3 grubości, 7 kolorów + dowolny (własne okno wyboru koloru) |
 | Zakreślacz | Półprzezroczysta gruba kreska |
 | Gumka (E) | Usuwa całe kreski/elementy, których dotknie |
 | Figury 2D | Odcinek, strzałka, prostokąt, elipsa, trójkąt, trójkąt prostokątny, romb, sześciokąt, układ współrzędnych; opcjonalne wypełnienie |
@@ -126,6 +126,16 @@ sequenceDiagram
 
 Dodatkowo: cofnij/ponów (Ctrl+Z / Ctrl+Shift+Z), tło (gładkie, kratka, linie, kropki), wyczyść tablicę,
 powiększenie 10–800 %, „pokaż całość”, tryb „tylko rysik”, wydruk (Ctrl+P).
+
+**Własny kolor** – ostatnie kółko palety (tęczowe) otwiera okno wyboru koloru aplikacji: pole
+nasycenia/jasności, suwak odcienia (mysz, pióro, palec, strzałki na klawiaturze), pole **HEX**,
+porównanie poprzedni/nowy kolor, rozszerzona paleta 24 kolorów i **ostatnio używane** kolory
+(pamiętane w przeglądarce, maks. 10). Dwuklik na kolorze z palety wybiera go od razu.
+
+**Okna dialogowe** – wszystkie pytania i potwierdzenia (zmiana nazwy tablicy, usunięcie / opuszczenie
+tablicy, usunięcie uczestnika, wyczyszczenie tablicy, usunięcie próbek pisma) to okna w stylu aplikacji,
+a nie systemowe okna przeglądarki. Zamykają się klawiszem Esc lub przyciskiem „Anuluj”; pole nazwy
+sprawdza poprawność (pusta / niezmieniona nazwa) przed zapisem.
 
 ## 6. Obrazy
 
@@ -143,7 +153,14 @@ powiększenie 10–800 %, „pokaż całość”, tryb „tylko rysik”, wydruk
   maturalnym z matematyki – 15 działów (wartość bezwzględna, potęgi i pierwiastki, logarytmy, silnia i dwumian
   Newtona, wzory skróconego mnożenia, ciągi, funkcja liniowa i kwadratowa, trygonometria, planimetria,
   geometria analityczna, stereometria, kombinatoryka, rachunek prawdopodobieństwa, parametry danych
-  statystycznych, granice i pochodne). Wzory tylko z poziomu rozszerzonego są oznaczone **„R”**.
+  statystycznych, granice i pochodne) oraz dział 16 – **tablica wartości funkcji trygonometrycznych**
+  (sin, cos, tg dla kątów całkowitych 0°–90°, 4 miejsca po przecinku, w trzech częściach: 0°–30°, 31°–60°,
+  61°–90°). W trygonometrii są też dokładne wartości dla 0°–90° i typowych kątów rozwartych (120°, 135°, 150°,
+  180°). Wzory tylko z poziomu rozszerzonego są oznaczone **„R”**.
+- **Opisy wzorów** – każdy wzór (także tablice) ma opis w trzech częściach: *Co to jest?* (znaczenie
+  symboli), *Jak korzystać?* (typowe zadania, pułapki) i *Przykład* (rozwiązany przykład liczbowy).
+  Na stronie `/wzory` opis rozwija się po kliknięciu wzoru (lub przycisku „Opis”), w panelu na tablicy –
+  przyciskiem **„?”** (kliknięcie wzoru służy tam do przeciągania).
 - **Dostępne dla wszystkich** zalogowanych użytkowników (korepetytorka i uczeń):
   - na tablicy – przycisk **„Wzory maturalne CKE”** (ikona książki na lewym pasku) otwiera panel z boku tablicy,
   - jako osobna strona **„Wzory CKE”** (`/wzory`) – link na liście tablic, do przeglądania i nauki.
