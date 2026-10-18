@@ -198,6 +198,14 @@ export function LatexInput({ value, onChange, autoFocus }: { value: string; onCh
     if (mathfield && mathfield.value !== value) mathfield.value = value;
   }, [value]);
 
+  useEffect(() => {
+    const host = visualHostRef.current;
+    const mathfield = mathfieldRef.current;
+    if (mode === 'visual' && host && mathfield && !host.contains(mathfield)) {
+      host.appendChild(mathfield);
+    }
+  }, [mode]);
+
   const insert = (item: PaletteItem) => {
     const ta = ref.current;
     const start = ta?.selectionStart ?? value.length;
@@ -222,11 +230,14 @@ export function LatexInput({ value, onChange, autoFocus }: { value: string; onCh
           LaTeX
         </button>
       </div>
-      {mode === 'visual' ? (
-        <div ref={visualHostRef} className="formula-preview formula-mathfield" />
-      ) : mode === 'handwriting' ? (
-        <HandwritingInput value={value} onChange={onChange} />
-      ) : (
+      <div
+        ref={visualHostRef}
+        className="formula-preview formula-mathfield"
+        style={{ display: mode === 'visual' ? undefined : 'none' }}
+        aria-hidden={mode !== 'visual'}
+      />
+      {mode === 'handwriting' && <HandwritingInput value={value} onChange={onChange} />}
+      {mode === 'latex' && (
         <>
           <div className="formula-preview" dangerouslySetInnerHTML={{ __html: renderLatex(value) }} />
           <textarea
