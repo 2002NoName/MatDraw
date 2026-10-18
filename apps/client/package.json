@@ -16,6 +16,7 @@
     "@matdraw/shared": "0.1.0",
     "katex": "^0.19.0",
     "mathjax-full": "^3.2.2",
+    "mathlive": "^0.111.1",
     "perfect-freehand": "^1.2.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

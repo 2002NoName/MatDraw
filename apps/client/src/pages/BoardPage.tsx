@@ -164,7 +164,7 @@ export function BoardPage() {
           <Icon name="activity" size={20} />
         </button>
         {isTutor && (
-          <button onClick={() => setManage(true)}>
+          <button className="board-invite-button" onClick={() => setManage(true)}>
             <Icon name="users" size={18} /> Zaproś / uczestnicy
           </button>
         )}

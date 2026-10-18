@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
 import type { UpdateAccountRequest } from '@matdraw/shared';
 import { api } from '../api/client';
 import { useAuth } from '../api/auth';
 import { AppFooter } from '../components/AppFooter';
+import { AppHeader } from '../components/AppHeader';
+import { RoleBadge } from '../components/icons';
 
 type Status = { ok?: string; error?: string };
 
@@ -68,18 +69,12 @@ export function AccountPage() {
 
   return (
     <div className="page account-page">
-      <header className="topbar">
-        <Link to="/" className="brand">
-          <img src="/icon.svg" alt="" width={28} height={28} /> MatDraw
-        </Link>
-        <div className="spacer" />
-        <Link to="/">← Moje tablice</Link>
-      </header>
+      <AppHeader />
 
       <main className="account">
         <h1>Moje konto</h1>
         <p className="muted">
-          Rodzaj konta: <strong>{user.role === 'TUTOR' ? 'korepetytorka' : 'uczeń'}</strong>
+          Rodzaj konta: <RoleBadge role={user.role} />
         </p>
 
         <form className="card account-card" onSubmit={saveProfile}>

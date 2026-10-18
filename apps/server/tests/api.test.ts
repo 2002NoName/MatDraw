@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import * as Y from 'yjs';
 import type { Express } from 'express';
 import { createApp } from '../src/app.js';
 import { MemoryStore } from '../src/store/memoryStore.js';
@@ -109,6 +110,41 @@ describe('edycja konta', () => {
 });
 
 describe('tablice, kody i uczestnicy', () => {
+  it('duplikuje zawartość i tło bez uczestników ani kodów zaproszeń', async () => {
+    const tutor = await register('duplicate@example.com', 'TUTOR');
+    const student = await register('member@example.com');
+    const auth = { Authorization: `Bearer ${tutor.token}` };
+    const original = (await request(app).post('/api/boards').set(auth).send({ title: 'Algebra' })).body;
+    await request(app).post(`/api/boards/${original.id}/members`).set(auth).send({ email: 'member@example.com' });
+    await request(app).post(`/api/boards/${original.id}/invites`).set(auth).send({});
+
+    const source = new Y.Doc();
+    source.getMap('elements').set('sample', { type: 'text', text: 'zawartość' });
+    source.getMap('meta').set('background', 'dots');
+    await store.saveBoardState(original.id, Y.encodeStateAsUpdate(source));
+    source.destroy();
+
+    const first = await request(app).post(`/api/boards/${original.id}/duplicate`).set(auth).send();
+    expect(first.status).toBe(201);
+    expect(first.body.title).toBe('Algebra duplikat 1');
+    expect(first.body.ownerId).toBe(tutor.user.id);
+    expect(first.body.memberCount).toBe(0);
+    expect((await request(app).post(`/api/boards/${original.id}/duplicate`).set({ Authorization: `Bearer ${student.token}` }).send()).status).toBe(403);
+
+    const copied = await store.loadBoardState(first.body.id);
+    expect(copied).not.toBeNull();
+    const clone = new Y.Doc();
+    Y.applyUpdate(clone, copied!);
+    expect(clone.getMap('elements').get('sample')).toEqual({ type: 'text', text: 'zawartość' });
+    expect(clone.getMap('meta').get('background')).toBe('dots');
+    clone.destroy();
+
+    const second = await request(app).post(`/api/boards/${original.id}/duplicate`).set(auth).send();
+    expect(second.body.title).toBe('Algebra duplikat 2');
+    expect((await request(app).get(`/api/boards/${second.body.id}`).set(auth)).body.invites).toEqual([]);
+    expect((await request(app).get(`/api/boards/${first.body.id}`).set({ Authorization: `Bearer ${student.token}` })).status).toBe(403);
+  });
+
   it('pełny scenariusz: tworzenie, zaproszenie, dołączenie, uprawnienia, usunięcie', async () => {
     const tutor = await register('tutor@example.com', 'TUTOR');
     const s1 = await register('s1@example.com');

@@ -22,6 +22,11 @@ export const COLORS = ['#212529', '#1c7ed6', '#e03131', '#2f9e44', '#f08c00', '#
 export const PEN_SIZES = [2.5, 4, 8];
 export const HIGHLIGHTER_SIZES = [16, 28];
 
+export function cycleValue<T>(values: readonly T[], current: T): T {
+  if (values.length === 0) return current;
+  return values[(values.indexOf(current) + 1 + values.length) % values.length]!;
+}
+
 export const SHAPE_LABELS: Record<Shape2DKind, string> = {
   line: 'Odcinek',
   arrow: 'Strzałka',
@@ -34,32 +39,36 @@ export const SHAPE_LABELS: Record<Shape2DKind, string> = {
   axes: 'Układ współrzędnych',
 };
 
-const BG_LABELS: Record<BoardBackground, string> = { blank: 'Gładkie', grid: 'Kratka', lines: 'Linie', dots: 'Kropki' };
+const BACKGROUNDS: { value: BoardBackground; label: string; icon: IconName }[] = [
+  { value: 'blank', label: 'Gładkie', icon: 'backgroundBlank' },
+  { value: 'grid', label: 'Kratka', icon: 'backgroundGrid' },
+  { value: 'dots', label: 'Kropki', icon: 'backgroundDots' },
+];
 
 const TOOLS: { tool: Tool; icon: IconName; label: string; edit: boolean }[] = [
   { tool: 'select', icon: 'select', label: 'Zaznaczanie i przesuwanie (V)', edit: true },
-  { tool: 'pan', icon: 'pan', label: 'Przesuwanie widoku (H)', edit: false },
+  { tool: 'pan', icon: 'pan', label: 'Przesuwanie widoku (H; lub Spacja + przeciągnięcie)', edit: false },
   { tool: 'pen', icon: 'pen', label: 'Pióro (P)', edit: true },
   { tool: 'highlighter', icon: 'highlighter', label: 'Zakreślacz', edit: true },
   { tool: 'eraser', icon: 'eraser', label: 'Gumka (E)', edit: true },
-  { tool: 'shape', icon: 'shape', label: 'Figury 2D', edit: true },
-  { tool: 'solid', icon: 'solid', label: 'Bryły 3D', edit: true },
-  { tool: 'formula', icon: 'formula', label: 'Wzór (LaTeX)', edit: true },
-  { tool: 'recognize', icon: 'recognize', label: 'Rozpoznaj pismo → wzór: zaznacz odręczny zapis', edit: true },
+  { tool: 'shape', icon: 'shape', label: 'Figury 2D (S; R prostokąt, O elipsa, L strzałka; ponownie S: kolejna figura)', edit: true },
+  { tool: 'solid', icon: 'solid', label: 'Bryły 3D (B; ponownie B: kolejna bryła)', edit: true },
+  { tool: 'formula', icon: 'formula', label: 'Wzór matematyczny (LaTeX)', edit: true },
+  { tool: 'recognize', icon: 'recognize', label: 'Rozpoznaj pismo: zaznacz odręczny zapis', edit: true },
   { tool: 'text', icon: 'text', label: 'Tekst (T)', edit: true },
   { tool: 'plot', icon: 'plot', label: 'Wykres funkcji', edit: true },
 ];
 
 export function ToolRail({
   tool,
-  setTool,
+  activateTool,
   readOnly,
   onImage,
   libraryOpen,
   onLibrary,
 }: {
   tool: Tool;
-  setTool(t: Tool): void;
+  activateTool(t: Tool): void;
   readOnly: boolean;
   onImage(): void;
   libraryOpen: boolean;
@@ -68,7 +77,7 @@ export function ToolRail({
   return (
     <div className="tool-rail" role="toolbar" aria-label="Narzędzia" onPointerDown={(e) => e.stopPropagation()}>
       {TOOLS.filter((t) => !readOnly || !t.edit).map((t) => (
-        <IconButton key={t.tool} icon={t.icon} label={t.label} active={tool === t.tool} onClick={() => setTool(t.tool)} />
+        <IconButton key={t.tool} icon={t.icon} label={t.label} active={tool === t.tool} onClick={() => activateTool(t.tool)} />
       ))}
       <div className="rail-sep" />
       {!readOnly && <IconButton icon="image" label="Wstaw obraz (także Ctrl+V lub przeciągnij plik)" onClick={onImage} />}
@@ -182,7 +191,6 @@ export function OptionsBar({
               </option>
             ))}
           </select>
-          <span className="muted small">obróć: zaznacz bryłę i przeciągnij uchwyt ⟳</span>
         </div>
       )}
       {tool === 'recognize' && (
@@ -192,19 +200,19 @@ export function OptionsBar({
         </div>
       )}
       <div className="group">
-        <label className="checkbox" title="Gdy włączone, palce przesuwają i powiększają tablicę, a rysuje tylko rysik (odrzucanie dłoni)">
-          <input type="checkbox" checked={opts.penOnly} onChange={(e) => setOpts({ penOnly: e.target.checked })} />
-          tylko rysik
-        </label>
+        <IconButton
+          icon="penOnly"
+          label={`Tylko rysik — ${opts.penOnly ? 'włączone' : 'wyłączone'} (palce przesuwają i powiększają widok)`}
+          active={opts.penOnly}
+          onClick={() => setOpts({ penOnly: !opts.penOnly })}
+        />
         {!readOnly && (
           <>
-            <select value={background} onChange={(e) => setBackground(e.target.value as BoardBackground)} aria-label="Tło tablicy">
-              {Object.entries(BG_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  Tło: {v}
-                </option>
+            <div className="group" role="group" aria-label="Tło tablicy">
+              {BACKGROUNDS.map((bg) => (
+                <IconButton key={bg.value} icon={bg.icon} label={`Tło: ${bg.label}`} active={background === bg.value} onClick={() => setBackground(bg.value)} />
               ))}
-            </select>
+            </div>
             <IconButton icon="trash" label="Wyczyść tablicę" onClick={onClear} />
           </>
         )}

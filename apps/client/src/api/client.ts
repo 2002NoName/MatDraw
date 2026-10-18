@@ -62,6 +62,7 @@ export const api = {
 
   listBoards: () => request<BoardSummary[]>('GET', '/boards'),
   createBoard: (title: string) => request<BoardSummary>('POST', '/boards', { title }),
+  duplicateBoard: (id: string) => request<BoardSummary>('POST', `/boards/${id}/duplicate`),
   getBoard: (id: string) => request<BoardDetails>('GET', `/boards/${id}`),
   renameBoard: (id: string, title: string) => request<BoardSummary>('PATCH', `/boards/${id}`, { title }),
   deleteBoard: (id: string) => request<void>('DELETE', `/boards/${id}`),

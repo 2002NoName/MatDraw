@@ -67,7 +67,12 @@ export class BoardStateManager {
   async getState(boardId: string): Promise<Uint8Array> {
     const live = this.entries.get(boardId);
     if (live) return Y.encodeStateAsUpdate(live.doc);
-    return (await this.store.loadBoardState(boardId)) ?? Y.encodeStateAsUpdate(new Y.Doc());
+    const stored = await this.store.loadBoardState(boardId);
+    if (stored) return stored;
+    const empty = new Y.Doc();
+    const update = Y.encodeStateAsUpdate(empty);
+    empty.destroy();
+    return update;
   }
 
   async applyUpdate(boardId: string, update: Uint8Array) {

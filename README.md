@@ -16,10 +16,15 @@ Współdzielona **tablica matematyczna** dla korepetycji – **aplikacja webowa*
   w zestawie jest też **tablica wartości sin/cos/tg** dla kątów 0°–90°,
 - **własne okna aplikacji** zamiast systemowych (potwierdzenia, zmiana nazwy, **wybór koloru** z paletą,
   suwakami HSV, polem HEX i ostatnio używanymi kolorami),
+- **menu i tablica dopasowane do telefonów** – nawigacja z ikonami, pasek narzędzi u dołu ekranu i przewijane
+  opcje na wąskich ekranach,
 - strona **Moje konto** (`/konto`) – zmiana widocznej nazwy, imienia i nazwiska, e‑maila i hasła
   (dla korepetytorki i ucznia),
 - **kursory uczestników jak w Figmie** – każda osoba ma swój kolor (korepetytorka różowy, uczeń niebieski)
   i etykietę z imieniem; własny kursor jest biały z czarną obwódką; kursor pióra/trackpada znika po 5 s,
+- **pasek narzędzi z ikonami** dla teł (gładkie, kratka, kropki) i trybu tylko rysik; powtórne użycie
+  skrótu / przycisku figur 2D i brył 3D przełącza kolejny kształt,
+- korepetytorka może **duplikować tablice** z zachowaniem treści i tła (bez uczestników i zaproszeń),
 - **diagnostyka połączeń** na żywo na tablicy (`Ctrl+Shift+D`) oraz **panel developera** `/dev`
   (testy WebSocket/STUN/TURN, statystyki P2P i serwera).
 

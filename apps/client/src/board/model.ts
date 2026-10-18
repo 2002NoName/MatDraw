@@ -84,7 +84,8 @@ export class BoardModel {
   }
 
   get background(): BoardBackground {
-    return (this.meta.get('background') as BoardBackground | undefined) ?? 'grid';
+    const background = this.meta.get('background');
+    return background === 'blank' || background === 'dots' ? background : 'grid';
   }
 
   setBackground(bg: BoardBackground) {

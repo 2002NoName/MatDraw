@@ -6,9 +6,10 @@ import { useAuth } from '../api/auth';
 import { BoardManagePanel } from '../components/BoardManagePanel';
 import { AppFooter } from '../components/AppFooter';
 import { useDialogs } from '../components/dialogs';
+import { AppHeader } from '../components/AppHeader';
 
 export function DashboardPage() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const dialogs = useDialogs();
   const navigate = useNavigate();
   const isTutor = user?.role === 'TUTOR';
@@ -58,21 +59,7 @@ export function DashboardPage() {
 
   return (
     <div className="page">
-      <header className="topbar">
-        <div className="brand">
-          <img src="/icon.svg" alt="" width={28} height={28} /> MatDraw
-        </div>
-        <div className="spacer" />
-        <Link to="/wzory">Wzory CKE</Link>
-        <Link to="/dev" title="Panel developera – diagnostyka połączeń P2P/WebRTC/TURN">
-          Diagnostyka
-        </Link>
-        <Link to="/konto" title="Moje konto – edycja danych i hasła">
-          {user?.displayName || user?.name}
-        </Link>
-        <span className="muted">{isTutor ? 'korepetytorka' : 'uczeń'}</span>
-        <button onClick={signOut}>Wyloguj</button>
-      </header>
+      <AppHeader />
 
       <main className="dashboard">
         {error && <div className="error">{error}</div>}
@@ -124,6 +111,7 @@ export function DashboardPage() {
                   {isTutor ? (
                     <>
                       <button onClick={() => setManage(b.id)}>Uczestnicy</button>
+                      <button onClick={() => void run(() => api.duplicateBoard(b.id))}>Duplikuj</button>
                       <button
                         onClick={async () => {
                           const t = await dialogs.prompt({

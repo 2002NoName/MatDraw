@@ -152,7 +152,7 @@ export function BoardManagePanel({ boardId, onClose }: { boardId: string; onClos
                       <strong>{m.displayName || m.name}</strong>
                       <div className="muted small">
                         {m.displayName && m.displayName !== m.name ? `${m.name} · ` : ''}
-                        {m.email} · {m.role === 'TUTOR' ? 'korepetytorka' : 'uczeń'}
+                        {m.email}
                       </div>
                     </div>
                     <div className="actions">

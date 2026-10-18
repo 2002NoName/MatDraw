@@ -212,7 +212,8 @@ sequenceDiagram
   Kolor jest unikalny w obrębie tablicy.
 - **Własny kursor** jest zawsze systemowo/CSS **biały z czarną obwódką** (strzałka przy zaznaczaniu, celownik
   przy rysowaniu) – swój kolor widzą tylko inni. Zdalny kursor to strzałka SVG w kolorze uczestnika
-  z czarną obwódką i **etykietą z widoczną nazwą** (`displayName`) w tym samym kolorze. Własny kursor nie jest
+  z delikatnym cieniem (bez czarnej obwódki) i **etykietą z widoczną nazwą** (`displayName`) w tym samym kolorze,
+  również z delikatnym cieniem i bez obwódki. Własny kursor nie jest
   nigdy rysowany jako zdalny, więc nie ma etykiety.
 - Pozycja wysyłana jest jako `PeerEphemeral` `{t:'cursor', x, y, p}` w układzie współrzędnych tablicy
   (niezależna od powiększenia), maks. co 40 ms; `p` = `mouse` | `pen` | `touch`. Dotyk wysyła kursor tylko
@@ -370,6 +371,8 @@ flowchart TD
 | -------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `config.ts`                            | Adres WebSocket (`/ws`) – ten sam origin co strona                                             |
 | `api/`                                 | Klient REST, kontekst logowania (`AuthProvider`)                                               |
+| `components/AppHeader.tsx`             | Wspólne menu nawigacyjne z ikonami, identyfikacją roli i wersją responsywną                    |
+| `dialogs/FormulaDialog.tsx`             | Wzory wpisywane w MathLive, LaTeX lub rozpoznawane lokalnie z pisma odręcznego                 |
 | `sync/session.ts`                      | `BoardSession` – WebSocket, Y.Doc, zarządzanie połączeniami P2P i fallbackiem                  |
 | `sync/peerLink.ts`                     | `PeerLink` – RTCPeerConnection, perfect negotiation, kanał danych, wykrywanie TURN             |
 | `sync/framing.ts`                      | Dzielenie i składanie ramek binarnych                                                          |
@@ -419,9 +422,14 @@ flowchart TD
 
 ### 5.2 Renderowanie
 
-Warstwy: tło (CSS – kratka/linie/kropki) → warstwa HTML (wzory, tekst) → warstwa SVG (kreski, figury,
+Warstwy: tło (CSS – gładkie/kratka/kropki; starsza wartość `lines` jest odczytywana jako kratka) → warstwa HTML (wzory, tekst) → warstwa SVG (kreski, figury,
 bryły, wykresy, obrazy) → kursory zdalnych uczestników. Transformacja widoku (`scale`, `ox`, `oy`) jest
 wspólna dla warstw, dzięki czemu wzory KaTeX pozostają ostre przy dowolnym powiększeniu.
+
+Skróty narzędzi są przypisane w `Whiteboard.tsx` i naśladują konwencje Miro (`V/H`, `P`, `S`, `R`, `O`,
+`L`, `T`, `E`; bryły 3D: `B`). Ponowne wywołanie `S` / `B` (figury 2D / bryły 3D) cyklicznie przełącza
+aktywny typ obiektu. Duplikat tablicy jest tworzony przez `POST /api/boards/:id/duplicate`:
+serwer zapisuje nowy rekord i kopiuje binarny stan Yjs, bez członków i zaproszeń.
 
 ### 5.3 Bryły 3D
 

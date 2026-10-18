@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import type { Role } from '@matdraw/shared';
 import { api } from '../api/client';
 import { useAuth } from '../api/auth';
+import { RoleBadge } from '../components/icons';
 
 export function RegisterPage() {
   const { user, signIn } = useAuth();
@@ -44,10 +45,10 @@ export function RegisterPage() {
         <h1>Załóż konto</h1>
         <div className="segmented" role="radiogroup" aria-label="Rodzaj konta">
           <button type="button" className={form.role === 'STUDENT' ? 'active' : ''} onClick={() => set('role', 'STUDENT')}>
-            Uczeń
+            <RoleBadge role="STUDENT" />
           </button>
           <button type="button" className={form.role === 'TUTOR' ? 'active' : ''} onClick={() => set('role', 'TUTOR')}>
-            Korepetytorka
+            <RoleBadge role="TUTOR" />
           </button>
         </div>
         <label>

@@ -74,12 +74,12 @@ sequenceDiagram
 | | Korepetytorka widzi | Uczeń widzi |
 |---|---|---|
 | własny kursor | biały z czarną obwódką, **bez etykiety** | biały z czarną obwódką, **bez etykiety** |
-| kursor drugiej osoby | **niebieski** (uczeń) z czarną obwódką + etykieta „Michał” | **różowy** (korepetytorka) z czarną obwódką + etykieta „Weronika” |
+| kursor drugiej osoby | **niebieski** (uczeń), delikatny cień + etykieta „Michał” | **różowy** (korepetytorka), delikatny cień + etykieta „Weronika” |
 
 - Kolor przydziela serwer według roli: korepetytorka – różowy, pierwszy uczeń – niebieski, kolejni uczniowie
   – zielony, pomarańczowy, fioletowy… (zawsze różne kolory na jednej tablicy). Ten sam kolor ma obramowanie
   osoby na liście uczestników w nagłówku.
-- Etykieta pokazuje **widoczną nazwę** z ustawień konta, w kolorze kursora.
+- Etykieta pokazuje **widoczną nazwę** z ustawień konta, w kolorze kursora, z subtelnym cieniem bez ciemnego obramowania.
 - Mysz: kursor znika, gdy wskaźnik opuści tablicę. **Pióro, trackpad, dotyk:** widać ostatnią pozycję,
   a po **5 s bez ruchu** kursor płynnie znika i wraca przy następnym ruchu (ta sama reguła 5 s dotyczy
   także nieruchomej myszy, bo przeglądarka nie odróżnia trackpada od myszy).
@@ -111,21 +111,28 @@ sequenceDiagram
 | Narzędzie | Opis |
 |---|---|
 | Zaznaczanie (V) | Zaznaczanie kliknięciem lub prostokątem, przesuwanie, skalowanie (uchwyt), obracanie brył 3D, duplikowanie, kolejność, usuwanie |
-| Przesuwanie widoku (H) | Przewijanie tablicy (również spacja + przeciągnięcie, dwa palce, kółko myszy) |
+| Przesuwanie widoku | Przewijanie tablicy przyciskiem; także Spacja + przeciągnięcie, dwa palce, kółko myszy |
 | Pióro (P) | Rysowanie z siłą nacisku, 3 grubości, 7 kolorów + dowolny (własne okno wyboru koloru) |
 | Zakreślacz | Półprzezroczysta gruba kreska |
 | Gumka (E) | Usuwa całe kreski/elementy, których dotknie |
-| Figury 2D | Odcinek, strzałka, prostokąt, elipsa, trójkąt, trójkąt prostokątny, romb, sześciokąt, układ współrzędnych; opcjonalne wypełnienie |
-| Bryły 3D | Sześcian, prostopadłościan, ostrosłup, graniastosłup, czworościan, walec, stożek, kula; obrót uchwytem, krawędzie niewidoczne przerywane (wyłączalne) |
-| Wzór | Edytor LaTeX z podglądem na żywo i paletą symboli (ułamki, potęgi, pierwiastki, litery greckie, relacje, całki, sumy, granice, macierze…) |
+| Figury 2D (S) | Odcinek, strzałka, prostokąt (R), elipsa (O), trójkąt, trójkąt prostokątny, romb, sześciokąt, układ współrzędnych; S cyklicznie przełącza typ; opcjonalne wypełnienie |
+| Bryły 3D (B) | Sześcian, prostopadłościan, ostrosłup, graniastosłup, czworościan, walec, stożek, kula; B cyklicznie przełącza typ; obrót uchwytem, krawędzie niewidoczne przerywane (wyłączalne) |
+| Wzór (LaTeX) | Edytor LaTeX z podglądem na żywo i paletą symboli (ułamki, potęgi, pierwiastki, litery greckie, relacje, całki, sumy, granice, macierze…) |
 | Rozpoznaj pismo | Zaznacz prostokątem odręczny zapis → aplikacja proponuje wzór LaTeX do poprawienia i wstawienia |
 | Tekst (T) | Zwykły tekst w wybranym rozmiarze i kolorze |
 | Wykres funkcji | `y = f(x)` z zakresem osi; funkcje `sin cos tan asin acos atan sqrt abs ln log exp floor ceil`, stałe `pi`, `e`, potęgi `^` |
 | Obraz | Wstawienie zdjęcia / grafiki z pliku (na iPadzie także z aparatu lub galerii), ze schowka (Ctrl+V) lub przeciągnięciem pliku na tablicę |
 | Wzory CKE | Panel wzorów maturalnych – przeciągnięcie wzoru na tablicę wstawia go jako obraz |
 
-Dodatkowo: cofnij/ponów (Ctrl+Z / Ctrl+Shift+Z), tło (gładkie, kratka, linie, kropki), wyczyść tablicę,
+Dodatkowo: cofnij/ponów (Ctrl+Z / Ctrl+Shift+Z), tło (gładkie, kratka, kropki), wyczyść tablicę,
 powiększenie 10–800 %, „pokaż całość”, tryb „tylko rysik”, wydruk (Ctrl+P).
+
+Tło i tryb „tylko rysik” przełącza się przyciskami z ikonami na górnym pasku. Wybór narzędzi 2D/3D
+można cyklicznie zmieniać kolejnymi kliknięciami aktywnego przycisku lub ponownym użyciem skrótu.
+Skróty `V/H`, `P`, `S`, `R`, `O`, `L`, `T`, `E` odpowiadają konwencjom Miro (L wybiera strzałkę);
+bryły 3D mają skrót `B`.
+Interfejs dopasowuje menu i pasek narzędzi do wąskich ekranów telefonu; na telefonie pasek narzędzi
+jest poziomy u dołu tablicy, a opcje można przewijać w poziomie.
 
 **Własny kolor** – ostatnie kółko palety (tęczowe) otwiera okno wyboru koloru aplikacji: pole
 nasycenia/jasności, suwak odcienia (mysz, pióro, palec, strzałki na klawiaturze), pole **HEX**,

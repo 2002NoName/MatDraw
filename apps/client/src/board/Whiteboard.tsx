@@ -7,6 +7,8 @@ import type {
   PeerEphemeral,
   PeerInfo,
   PlotElement,
+  Shape2DKind,
+  Solid3DKind,
   SolidElement,
   StrokeElement,
   StrokeTool,
@@ -15,8 +17,8 @@ import type {
 import { newId, type BoardModel } from './model';
 import { elementBounds, hitTest, normRect, rectContains, rectInside, scaleElement, translateElement, unionRects, type Rect, type Size } from './geometry';
 import { HtmlElementView, StrokeView, SvgElementView } from './render';
-import { DEFAULT_ROT_X, DEFAULT_ROT_Y, clampTilt } from './solids';
-import { OptionsBar, ToolRail, type Tool, type ToolOptions } from './Toolbar';
+import { DEFAULT_ROT_X, DEFAULT_ROT_Y, clampTilt, SOLID_LABELS } from './solids';
+import { cycleValue, OptionsBar, SHAPE_LABELS, ToolRail, type Tool, type ToolOptions } from './Toolbar';
 import { Icon, IconButton } from '../components/icons';
 import { useDialogs } from '../components/dialogs';
 import { FormulaDialog, TextDialog } from '../dialogs/FormulaDialog';
@@ -101,8 +103,6 @@ function backgroundStyle(bg: BoardBackground, v: View): CSSProperties {
         backgroundSize: size,
         backgroundPosition: pos,
       };
-    case 'lines':
-      return { backgroundImage: 'linear-gradient(#dbe4ee 1px, transparent 1px)', backgroundSize: size, backgroundPosition: pos };
     case 'dots':
       return { backgroundImage: 'radial-gradient(circle, #c4cad0 1.3px, transparent 1.6px)', backgroundSize: size, backgroundPosition: `${v.ox - step / 2}px ${v.oy - step / 2}px` };
   }
@@ -167,6 +167,20 @@ export function Whiteboard({
       return next;
     });
   }, []);
+  const activateTool = (nextTool: Tool) => {
+    if (nextTool === 'shape' && toolState === 'shape') {
+      const kinds = Object.keys(SHAPE_LABELS) as Shape2DKind[];
+      setOpts({ shape: cycleValue(kinds, opts.shape) });
+      return;
+    }
+    if (nextTool === 'solid' && toolState === 'solid') {
+      const kinds = Object.keys(SOLID_LABELS) as Solid3DKind[];
+      setOpts({ solid: cycleValue(kinds, opts.solid) });
+      return;
+    }
+    setTool(nextTool);
+    if (nextTool !== 'select') setSelection(new Set());
+  };
 
   const [selection, setSelection] = useState<Set<string>>(new Set());
   const [overrides, setOverrides] = useState<Map<string, BoardElement> | null>(null);
@@ -855,9 +869,14 @@ export function Whiteboard({
         abortGesture();
         setSelection(new Set());
       } else if (!mod && !e.altKey) {
-        const map: Record<string, Tool> = { v: 'select', h: 'pan', p: 'pen', e: 'eraser', t: 'text' };
+        const map: Record<string, Tool> = { v: 'select', h: 'pan', p: 'pen', e: 'eraser', s: 'shape', b: 'solid', t: 'text' };
         const t = map[e.key.toLowerCase()];
-        if (t) setTool(t);
+        if (!e.repeat && t) activateTool(t);
+        else if (!e.repeat && ['r', 'o', 'l'].includes(e.key.toLowerCase())) {
+          const kind: Shape2DKind = e.key.toLowerCase() === 'r' ? 'rect' : e.key.toLowerCase() === 'o' ? 'ellipse' : 'arrow';
+          setOpts({ shape: kind });
+          if (toolState !== 'shape') activateTool('shape');
+        }
       }
     };
     window.addEventListener('keydown', onKey);
@@ -1009,7 +1028,7 @@ export function Whiteboard({
               style={{ transform: `translate(${c.x * view.scale + view.ox}px, ${c.y * view.scale + view.oy}px)`, color: c.color }}
             >
               <svg width={20} height={22} viewBox="0 0 20 22" aria-hidden="true">
-                <path d="M2 1.5 L2 18.5 L6.6 14.2 L9.6 20.6 L12.6 19.2 L9.7 12.9 L16 12.9 Z" fill="currentColor" stroke="#000" strokeWidth={1.4} strokeLinejoin="round" />
+                <path d="M2 1.5 L2 18.5 L6.6 14.2 L9.6 20.6 L12.6 19.2 L9.7 12.9 L16 12.9 Z" fill="currentColor" stroke="none" />
               </svg>
               <span className="remote-cursor-label" style={{ background: c.color }}>
                 {c.name}
@@ -1021,10 +1040,7 @@ export function Whiteboard({
       <ToolRail
         tool={tool}
         readOnly={readOnly}
-        setTool={(t) => {
-          setTool(t);
-          if (t !== 'select') setSelection(new Set());
-        }}
+        activateTool={activateTool}
         onImage={() => fileInputRef.current?.click()}
         libraryOpen={libraryOpen}
         onLibrary={() => setLibraryOpen((o) => !o)}

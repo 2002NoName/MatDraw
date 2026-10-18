@@ -97,6 +97,27 @@ export function boardsRouter(deps: AppDeps) {
     res.status(201).json(summary);
   });
 
+  r.post('/:id/duplicate', tutorOnly, async (req, res) => {
+    const a = await access(req);
+    const existingTitles = new Set((await store.listAllBoards()).map((board) => board.title));
+    let index = 1;
+    let title = '';
+    do {
+      const suffix = ` duplikat ${index++}`;
+      title = `${a.board.title.slice(0, 200 - suffix.length).trimEnd()}${suffix}`;
+    } while (existingTitles.has(title));
+
+    const board = await store.createBoard({ title, ownerId: req.user!.id });
+    try {
+      await store.saveBoardState(board.id, await state.getState(a.board.id));
+    } catch (error) {
+      await store.deleteBoard(board.id);
+      throw error;
+    }
+    const [summary] = await summarizeBoards(store, [board], req.user!);
+    res.status(201).json(summary);
+  });
+
   r.get('/:id', async (req, res) => {
     const a = await access(req);
     const [summary] = await summarizeBoards(store, [a.board], req.user!);

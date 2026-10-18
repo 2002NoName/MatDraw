@@ -1,6 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { MathfieldElement } from 'mathlive';
 import { Modal } from '../components/Modal';
 import { renderLatex } from '../board/render';
+import { recognize } from '../recognition/recognizer';
+import type { Pt } from '../recognition/pdollar';
+import { allTemplates } from '../recognition/userTemplates';
 
 interface PaletteItem {
   label: string;
@@ -86,8 +90,114 @@ const PALETTE_PREVIEW: Record<string, string> = {
   '\\begin{bmatrix}': '\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}',
 };
 
+function HandwritingInput({ value, onChange }: { value: string; onChange(v: string): void }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const drawingRef = useRef<Pt[] | null>(null);
+  const [strokes, setStrokes] = useState<Pt[][]>([]);
+  const [message, setMessage] = useState('');
+
+  const point = (event: ReactPointerEvent<SVGSVGElement>): Pt => {
+    const rect = svgRef.current!.getBoundingClientRect();
+    return { x: ((event.clientX - rect.left) / rect.width) * 700, y: ((event.clientY - rect.top) / rect.height) * 150 };
+  };
+
+  const finishStroke = () => {
+    const stroke = drawingRef.current;
+    if (!stroke) return;
+    drawingRef.current = null;
+    const nextStrokes = [...strokes, stroke];
+    setStrokes(nextStrokes);
+    const result = recognize(nextStrokes, allTemplates());
+    if (result.latex) {
+      onChange(result.latex);
+      setMessage('');
+    } else {
+      setMessage('Nie udało się rozpoznać zapisu. Spróbuj napisać go wyraźniej.');
+    }
+  };
+
+  return (
+    <div className="formula-handwriting">
+      <p className="muted small">Napisz wzór palcem, myszą lub rysikiem. Rozpoznany zapis pojawi się w podglądzie.</p>
+      <svg
+        ref={svgRef}
+        className="formula-writing-pad"
+        viewBox="0 0 700 150"
+        onPointerDown={(event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+          drawingRef.current = [point(event)];
+          setStrokes((current) => [...current, [...drawingRef.current!]]);
+          setMessage('');
+        }}
+        onPointerMove={(event) => {
+          if (!drawingRef.current) return;
+          drawingRef.current.push(point(event));
+          const currentStroke = [...drawingRef.current];
+          setStrokes((current) => [...current.slice(0, -1), currentStroke]);
+        }}
+        onPointerUp={finishStroke}
+        onPointerCancel={() => {
+          drawingRef.current = null;
+        }}
+      >
+        {strokes.map((stroke, index) => (
+          <polyline
+            key={index}
+            points={stroke.map((p) => `${p.x},${p.y}`).join(' ')}
+            fill="none"
+            stroke="#212529"
+            strokeWidth={4}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+      </svg>
+      <div className="row between">
+        <span className={message ? 'error small' : 'muted small'}>{message || (value ? 'Wzór rozpoznany — możesz go poprawić w edytorze matematycznym lub LaTeX.' : '')}</span>
+        <button type="button" disabled={!strokes.length} onClick={() => { setStrokes([]); setMessage(''); }}>
+          Wyczyść pismo
+        </button>
+      </div>
+      <div className="formula-preview formula-recognition-preview" aria-label="Podgląd rozpoznanego wzoru">
+        {value ? <span dangerouslySetInnerHTML={{ __html: renderLatex(value) }} /> : <span className="muted small">Podgląd rozpoznanego wzoru</span>}
+      </div>
+    </div>
+  );
+}
+
 export function LatexInput({ value, onChange, autoFocus }: { value: string; onChange(v: string): void; autoFocus?: boolean }) {
   const ref = useRef<HTMLTextAreaElement>(null);
+  const visualHostRef = useRef<HTMLDivElement>(null);
+  const mathfieldRef = useRef<MathfieldElement | null>(null);
+  const onChangeRef = useRef(onChange);
+  const [mode, setMode] = useState<'visual' | 'handwriting' | 'latex'>('visual');
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    const mathfield = new MathfieldElement();
+    mathfield.value = value;
+    mathfield.mathVirtualKeyboardPolicy = 'auto';
+    mathfield.setAttribute('aria-label', 'Wpisz wzór matematyczny');
+    const handleInput = () => onChangeRef.current(mathfield.value);
+    mathfield.addEventListener('input', handleInput);
+    visualHostRef.current?.replaceChildren(mathfield);
+    mathfieldRef.current = mathfield;
+    if (autoFocus) mathfield.focus();
+    return () => {
+      mathfield.removeEventListener('input', handleInput);
+      mathfield.remove();
+      mathfieldRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const mathfield = mathfieldRef.current;
+    if (mathfield && mathfield.value !== value) mathfield.value = value;
+  }, [value]);
+
   const insert = (item: PaletteItem) => {
     const ta = ref.current;
     const start = ta?.selectionStart ?? value.length;
@@ -101,38 +211,57 @@ export function LatexInput({ value, onChange, autoFocus }: { value: string; onCh
   };
   return (
     <div className="latex-input">
-      <div className="formula-preview" dangerouslySetInnerHTML={{ __html: renderLatex(value) }} />
-      <textarea
-        ref={ref}
-        className="mono"
-        rows={3}
-        autoFocus={autoFocus}
-        spellCheck={false}
-        autoCapitalize="off"
-        autoCorrect="off"
-        placeholder="np. \frac{1}{2}x^2 + \sqrt{3}"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <div className="palette">
-        {PALETTE.map((g) => (
-          <div key={g.group} className="palette-group">
-            <span className="muted small">{g.group}</span>
-            <div className="palette-items">
-              {g.items.map((it) => (
-                <button
-                  key={it.label}
-                  type="button"
-                  className="palette-btn"
-                  title={it.insert.trim()}
-                  onClick={() => insert(it)}
-                  dangerouslySetInnerHTML={{ __html: renderLatex(PALETTE_PREVIEW[it.label] ?? it.label, false) }}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+      <div className="segmented formula-input-modes" aria-label="Sposób wprowadzania wzoru">
+        <button type="button" className={mode === 'visual' ? 'active' : ''} aria-pressed={mode === 'visual'} onClick={() => setMode('visual')}>
+          Edytor
+        </button>
+        <button type="button" className={mode === 'handwriting' ? 'active' : ''} aria-pressed={mode === 'handwriting'} onClick={() => setMode('handwriting')}>
+          Pismo odręczne
+        </button>
+        <button type="button" className={mode === 'latex' ? 'active' : ''} aria-pressed={mode === 'latex'} onClick={() => setMode('latex')}>
+          LaTeX
+        </button>
       </div>
+      {mode === 'visual' ? (
+        <div ref={visualHostRef} className="formula-preview formula-mathfield" />
+      ) : mode === 'handwriting' ? (
+        <HandwritingInput value={value} onChange={onChange} />
+      ) : (
+        <>
+          <div className="formula-preview" dangerouslySetInnerHTML={{ __html: renderLatex(value) }} />
+          <textarea
+            ref={ref}
+            className="mono"
+            rows={3}
+            autoFocus={autoFocus}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+            placeholder="np. \frac{1}{2}x^2 + \sqrt{3}"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+          <div className="palette">
+            {PALETTE.map((g) => (
+              <div key={g.group} className="palette-group">
+                <span className="muted small">{g.group}</span>
+                <div className="palette-items">
+                  {g.items.map((it) => (
+                    <button
+                      key={it.label}
+                      type="button"
+                      className="palette-btn"
+                      title={it.insert.trim()}
+                      onClick={() => insert(it)}
+                      dangerouslySetInnerHTML={{ __html: renderLatex(PALETTE_PREVIEW[it.label] ?? it.label, false) }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -166,18 +295,14 @@ export function FormulaDialog({
   onClose(): void;
 }) {
   const [latex, setLatex] = useState(initial);
-  const [size, setSize] = useState(initialSize);
   return (
     <Modal title="Wzór matematyczny" onClose={onClose} wide>
       <LatexInput value={latex} onChange={setLatex} autoFocus />
-      <div className="row between">
-        <SizeSelect value={size} onChange={setSize} />
-        <div className="row">
-          <button onClick={onClose}>Anuluj</button>
-          <button className="primary" disabled={!latex.trim()} onClick={() => onSave(latex.trim(), size)}>
-            Zapisz
-          </button>
-        </div>
+      <div className="dialog-actions">
+        <button onClick={onClose}>Anuluj</button>
+        <button className="primary" disabled={!latex.trim()} onClick={() => onSave(latex.trim(), initialSize)}>
+          Zapisz
+        </button>
       </div>
     </Modal>
   );

@@ -4,6 +4,7 @@ import type { DevStatsResponse, IceConfigResponse } from '@matdraw/shared';
 import { api } from '../api/client';
 import { useAuth } from '../api/auth';
 import { AppFooter } from '../components/AppFooter';
+import { AppHeader } from '../components/AppHeader';
 import { describeCandidateType, formatBytes, formatDuration, maskIceServers } from '../sync/diagnostics';
 import { gatherCandidates, testWebSocket, timeHealth, turnLoopback, type GatherResult, type LoopbackResult, type WsTestResult } from '../sync/connectivityTests';
 
@@ -116,14 +117,7 @@ export function DevPage() {
 
   return (
     <div className="page">
-      <header className="topbar">
-        <Link to="/" className="brand">
-          <img src="/icon.svg" alt="" width={28} height={28} /> MatDraw
-        </Link>
-        <strong>Panel developera</strong>
-        <div className="spacer" />
-        <Link to="/">← Moje tablice</Link>
-      </header>
+      <AppHeader />
 
       <main className="dev-page">
         <p className="muted">

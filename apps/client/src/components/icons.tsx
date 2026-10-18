@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react';
+import type { Role } from '@matdraw/shared';
 
 const PATHS: Record<string, string> = {
+  home: 'M3 10.5L12 3l9 7.5M5 9v11h14V9M9 20v-7h6v7',
+  student: 'M2 9l10-5 10 5-10 5zM6 11v5c3.5 3 8.5 3 12 0v-5M22 9v6',
+  tutor: 'M3 20V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v15M3 20h18M8 8h3M8 12h3M15 9a2 2 0 1 0 0 .01M13 15a2 2 0 0 1 4 0',
+  logout: 'M10 17l5-5-5-5M15 12H3M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6',
+  account: 'M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10z',
   select: 'M5 3l13 7-6 1.5L9.5 18z',
   pan: 'M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3',
   pen: 'M4 20l4-1 11-11-3-3L5 16zM14 7l3 3',
@@ -28,9 +34,23 @@ const PATHS: Record<string, string> = {
   back: 'M15 18l-6-6 6-6',
   activity: 'M3 12h4l3-8 4 16 3-8h4',
   hand: 'M7 11V6a1.5 1.5 0 0 1 3 0v5M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V5.5a1.5 1.5 0 0 1 3 0V12M16 9.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1.5a6 6 0 0 1-4.6-2.2L4 15a1.6 1.6 0 0 1 2.4-2L8 14.5V8',
+  backgroundBlank: 'M4 3h16v18H4z',
+  backgroundGrid: 'M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18',
+  backgroundDots: 'M5 5a1 1 0 1 0 0 .01M12 5a1 1 0 1 0 0 .01M19 5a1 1 0 1 0 0 .01M5 12a1 1 0 1 0 0 .01M12 12a1 1 0 1 0 0 .01M19 12a1 1 0 1 0 0 .01M5 19a1 1 0 1 0 0 .01M12 19a1 1 0 1 0 0 .01M19 19a1 1 0 1 0 0 .01',
+  penOnly: 'M4 20l4-1 11-11-3-3L5 16zM14 7l3 3M19 3v4M16 6h6',
 };
 
 export type IconName = keyof typeof PATHS;
+
+export function RoleBadge({ role, compact = false }: { role: Role; compact?: boolean }) {
+  const label = role === 'TUTOR' ? 'Korepetytorka' : 'Uczeń';
+  return (
+    <span className={`role-badge${compact ? ' compact' : ''}`} title={label} aria-label={label}>
+      <Icon name={role === 'TUTOR' ? 'tutor' : 'student'} size={compact ? 16 : 18} />
+      {!compact && <span>{label}</span>}
+    </span>
+  );
+}
 
 export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
   return (

@@ -114,7 +114,7 @@ export function ConnectionDebugPanel({ session, onClose }: { session: BoardSessi
             <Row k="Ponowne łączenia" v={d.ws.reconnects} warn={d.ws.reconnects > 0} />
             <Row k="Wiadomości ↓/↑" v={`${d.ws.msgsIn} / ${d.ws.msgsOut}`} />
             <Row k="Dane ↓/↑" v={`${formatBytes(d.ws.bytesIn)} / ${formatBytes(d.ws.bytesOut)} (${rate(rates.ws?.in ?? null)} / ${rate(rates.ws?.out ?? null)})`} />
-            <Row k="Ja" v={d.self ? `${d.self.name} · ${d.self.role === 'TUTOR' ? 'korepetytorka' : 'uczeń'} · ${d.self.canEdit ? 'edycja' : 'podgląd'}` : '—'} />
+            <Row k="Ja" v={d.self ? `${d.self.name} · ${d.self.role === 'TUTOR' ? 'korepetytor' : 'uczeń'} · ${d.self.canEdit ? 'edycja' : 'podgląd'}` : '—'} />
             <Row k="Dokument" v={`${formatBytes(d.doc.bytes)} · oczekujące zmiany: ${d.doc.pendingUpdates}`} />
           </section>
 
@@ -132,7 +132,7 @@ export function ConnectionDebugPanel({ session, onClose }: { session: BoardSessi
                       {p.name.slice(0, 1).toUpperCase()}
                     </span>
                     <strong>{p.name}</strong>
-                    <span className="muted">{p.role === 'TUTOR' ? 'korepetytorka' : 'uczeń'}</span>
+                    <span className="muted small">{p.role === 'TUTOR' ? 'korepetytor' : 'uczeń'}</span>
                     {l && <span className={`route-badge route-${l.state}`}>{ROUTE_LABEL[l.state]}</span>}
                   </div>
                   {!l ? (

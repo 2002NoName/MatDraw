@@ -65,7 +65,9 @@ Po zapisaniu zmiany obowiązują od razu – kolejne logowanie odbywa się nowym
 
 Na stronie głównej wpisz nazwę (np. „Funkcja kwadratowa – Jan”) i kliknij **+ Nowa tablica**.
 Lista **Wszystkie tablice** zawiera każdą tablicę w systemie. Przy tablicy znajdziesz przyciski
-**Uczestnicy**, **Zmień nazwę** i **Usuń**.
+**Uczestnicy**, **Duplikuj**, **Zmień nazwę** i **Usuń**. Duplikowanie tworzy nową tablicę z kopią
+rysunków, obiektów i tła; nie kopiuje uczestników ani kodów zaproszeń. Kolejne kopie dostają nazwy
+„<nazwa> duplikat 1”, „<nazwa> duplikat 2” itd.
 
 ### Zapraszanie ucznia (kod)
 
@@ -99,8 +101,8 @@ W sekcji **Uczestnicy**:
 - W nagłówku tablicy widać osoby obecne na tablicy. Kolor obramowania = kolor kursora tej osoby.
   Ikona przy imieniu pokazuje rodzaj połączenia: bezpośrednie (P2P), przez serwer TURN, lub przez serwer MatDraw.
 - Zielona kropka przy nazwie tablicy = połączenie z serwerem aktywne (tablica się zapisuje).
-- **Kursory:** widzisz, gdzie pisze uczeń – jego kursor jest kolorowy (pierwszy uczeń: niebieski) z czarną
-  obwódką i etykietą z jego imieniem. Twój własny kursor jest biały z czarną obwódką i bez etykiety;
+- **Kursory:** widzisz, gdzie pisze uczeń – jego kursor jest kolorowy (pierwszy uczeń: niebieski) z delikatnym
+  cieniem i etykietą z jego imieniem. Twój własny kursor jest biały z czarną obwódką i bez etykiety;
   uczeń widzi go jako **różowy** z etykietą Twojego imienia. Przy piórze/trackpadzie kursor drugiej osoby
   zostaje w ostatnim miejscu i znika po 5 s bez ruchu.
 - **Diagnostyka połączeń:** ikona pulsu w nagłówku tablicy (lub `Ctrl+Shift+D`) – patrz rozdział 7.
@@ -135,12 +137,15 @@ W sekcji **Uczestnicy**:
 | ⌫ | **Gumka** | Przeciągnij po elementach, które chcesz usunąć. |
 | □△ | **Figury 2D** | Wybierz figurę w górnym pasku i przeciągnij na tablicy (kliknięcie wstawia figurę o domyślnym rozmiarze). Opcja *wypełnienie*. |
 | ⬡ | **Bryły 3D** | Wybierz bryłę i przeciągnij/kliknij. Obracaj uchwytem obrotu; przycisk na pasku zaznaczenia włącza/wyłącza krawędzie niewidoczne (przerywane). |
-| √ | **Wzór** | Kliknij w miejscu wzoru → wpisz LaTeX lub użyj palety symboli → **Wstaw**. |
+| √ | **Wzór** | Kliknij w miejscu wzoru → użyj edytora matematycznego, pisma odręcznego albo przełącz na LaTeX / paletę symboli → **Wstaw**. |
 | ✎✦ | **Rozpoznaj pismo** | Patrz rozdział 5. |
 | T | **Tekst** | Kliknij w miejscu tekstu, wpisz treść. |
 | 📈 | **Wykres funkcji** | Wpisz np. `x^2 - 2x - 3`, `sin(x)`, `sqrt(x)`, ustaw zakres osi → podgląd → **Wstaw**. |
 | 🖼 | **Wstaw obraz** | Wybierz zdjęcie lub grafikę z dysku (na iPadzie: galeria, aparat lub Pliki). Patrz niżej. |
 | 📖 | **Wzory maturalne CKE** | Otwiera / zamyka panel wzorów maturalnych. Patrz niżej. |
+
+Nowy wzór matematyczny ma domyślny rozmiar **32**; podczas edycji istniejącego wzoru zachowuje on
+dotychczasowy rozmiar. Rozmiar tekstu ustawia się osobno w oknie tekstu.
 
 ### Obrazy
 
@@ -181,8 +186,9 @@ Na stronie `/wzory` **kliknij wzór**, aby rozwinąć opis z przykładem; ponown
 
 ### Górny pasek opcji
 
-Cofnij / ponów, kolory (7 + dowolny), grubości, wybór figury/bryły, **tylko rysik**, tło
-(gładkie, kratka, linie, kropki), **wyczyść tablicę** (z potwierdzeniem; można cofnąć).
+Cofnij / ponów, kolory (7 + dowolny), grubości, wybór figury/bryły, przycisk **tylko rysik**, trzy
+przyciski tła (**gładkie**, **kratka**, **kropki**), **wyczyść tablicę** (z potwierdzeniem; można cofnąć).
+Tła w linie nie ma już na liście; starsza tablica zapisana z tym tłem pokaże kratkę.
 
 **Własny kolor:** kliknij ostatnie, tęczowe kółko palety. W oknie wybierz kolor w dużym kwadracie
 (nasycenie i jasność) i na pasku odcienia, wpisz kod **HEX** (np. `#1971c2`) i zatwierdź Enterem albo
@@ -232,7 +238,9 @@ Próbki są zapamiętywane na tym urządzeniu.
 
 | Skrót | Działanie |
 |---|---|
-| V / H / P / E / T | Zaznaczanie / przesuwanie / pióro / gumka / tekst |
+| V / H / P / E / S / R / O / L / T | Zaznaczanie / przesuwanie / pióro / gumka / figury 2D / prostokąt / elipsa / linia / tekst |
+| B | Bryły 3D |
+| Ponownie S lub B (albo kliknięcie aktywnego przycisku) | Następna figura 2D lub bryła 3D; po ostatniej wraca do pierwszej |
 | Ctrl+Z (⌘Z) | Cofnij |
 | Ctrl+Shift+Z, Ctrl+Y | Ponów |
 | Ctrl+A | Zaznacz wszystko |
@@ -240,10 +248,13 @@ Próbki są zapamiętywane na tym urządzeniu.
 | Ctrl+V (⌘V) | Wklej obraz ze schowka |
 | Delete / Backspace | Usuń zaznaczenie |
 | Esc | Anuluj zaznaczenie / zamknij okno |
-| Spacja + przeciągnij | Przesuwanie widoku |
+| Przycisk przesuwania widoku lub Spacja + przeciągnij | Przesuwanie widoku |
 | Kółko myszy | Przewijanie; z Ctrl – powiększanie |
 | Dwa palce | Przesuwanie i powiększanie (iPad, ekran dotykowy, gładzik) |
 | Ctrl+Shift+D (⌘⇧D) | Pokaż / ukryj panel diagnostyki połączeń na tablicy |
+
+Skróty narzędzi (`V/H`, `P`, `S`, `R`, `O`, `L`, `T`, `E`) odpowiadają konwencjom stosowanym
+w tablicach Miro; `B` wybiera bryły 3D. Źródło: [oficjalna lista skrótów Miro](https://help.miro.com/hc/en-us/articles/360017731033-Shortcuts-and-hotkeys).
 
 ---
 

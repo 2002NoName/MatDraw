@@ -131,4 +131,4 @@ export const YDOC_ELEMENTS_KEY = 'elements';
 /** Nazwa mapy Yjs z metadanymi tablicy (np. tło). */
 export const YDOC_META_KEY = 'meta';
 
-export type BoardBackground = 'blank' | 'grid' | 'lines' | 'dots';
+export type BoardBackground = 'blank' | 'grid' | 'dots';
