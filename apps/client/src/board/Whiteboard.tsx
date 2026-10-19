@@ -214,6 +214,7 @@ export function Whiteboard({
 
   const gesture = useRef<Gesture | null>(null);
   const touches = useRef(new Map<number, Pt2>());
+  const penPointer = useRef<number | null>(null);
   const lastTap = useRef<{ id: string; t: number } | null>(null);
   const lastCursorSent = useRef(0);
   const spaceDown = useRef(false);
@@ -334,6 +335,18 @@ export function Whiteboard({
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   };
   const toWorld = (p: Pt2, v = viewRef.current): Pt2 => ({ x: (p.x - v.ox) / v.scale, y: (p.y - v.oy) / v.scale });
+
+  useEffect(() => {
+    const node = containerRef.current!;
+    // Safari może przejąć szybkie dotknięcia Pencil mimo touch-action: none.
+    const preventTouchGesture = (e: TouchEvent) => e.preventDefault();
+    node.addEventListener('touchstart', preventTouchGesture, { passive: false });
+    node.addEventListener('touchmove', preventTouchGesture, { passive: false });
+    return () => {
+      node.removeEventListener('touchstart', preventTouchGesture);
+      node.removeEventListener('touchmove', preventTouchGesture);
+    };
+  }, []);
 
   const zoomAt = useCallback(
     (sx: number, sy: number, nextScale: number) => {
@@ -515,13 +528,20 @@ export function Whiteboard({
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.button === 2) return;
+    e.preventDefault();
     const sp = screenPoint(e);
     if (e.pointerType === 'pen' && !opts.penOnly && !sessionStorage.getItem('matdraw.penSeen')) {
       // Wykryto rysik – włącz odrzucanie dłoni (można wyłączyć w pasku narzędzi).
       sessionStorage.setItem('matdraw.penSeen', '1');
       setOpts({ penOnly: true });
     }
+    if (e.pointerType === 'pen') {
+      const g = gesture.current;
+      if (g && (g.kind === 'pinch' || touches.current.has(g.pointerId))) abortGesture();
+      touches.current.clear();
+    }
     if (e.pointerType === 'touch') {
+      if (penPointer.current !== null) return;
       touches.current.set(e.pointerId, sp);
       if (touches.current.size === 2) {
         abortGesture();
@@ -533,6 +553,7 @@ export function Whiteboard({
     }
     if (gesture.current) return;
     e.currentTarget.setPointerCapture(e.pointerId);
+    if (e.pointerType === 'pen') penPointer.current = e.pointerId;
     const w = toWorld(sp);
     const penOnlyTouch = e.pointerType === 'touch' && opts.penOnly;
     const effective: Tool = e.button === 1 || spaceDown.current || penOnlyTouch ? 'pan' : tool;
@@ -709,6 +730,7 @@ export function Whiteboard({
   };
 
   const finishGesture = (e: ReactPointerEvent<HTMLDivElement>, cancelled: boolean) => {
+    if (penPointer.current === e.pointerId) penPointer.current = null;
     if (e.pointerType === 'touch') touches.current.delete(e.pointerId);
     const g = gesture.current;
     if (!g) return;
@@ -940,6 +962,7 @@ export function Whiteboard({
         onPointerMove={onPointerMove}
         onPointerUp={(e) => finishGesture(e, false)}
         onPointerCancel={(e) => finishGesture(e, true)}
+        onLostPointerCapture={(e) => finishGesture(e, true)}
         onPointerLeave={(e) => {
           // Mysz: kursor znika od razu po opuszczeniu tablicy; pióro/dotyk: zostaje ostatnia pozycja (znika po 5 s).
           if (e.pointerType === 'mouse') channel.send({ t: 'cursor-hide' });

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../api/auth';
-import { Icon, RoleBadge, type IconName } from './icons';
+import { Icon, type IconName } from './icons';
 
 const LINKS: { to: string; label: string; icon: IconName; title: string }[] = [
   { to: '/', label: 'Tablice', icon: 'home', title: 'Moje tablice' },
@@ -11,7 +11,7 @@ const LINKS: { to: string; label: string; icon: IconName; title: string }[] = [
 ];
 
 export function AppHeader() {
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -31,12 +31,6 @@ export function AppHeader() {
           );
         })}
       </nav>
-      {user && (
-        <Link to="/konto" className="topbar-user" title="Ustawienia konta">
-          <RoleBadge role={user.role} compact />
-          <span className="topbar-user-name">{user.displayName || user.name}</span>
-        </Link>
-      )}
       <button className="signout-button" onClick={signOut} title="Wyloguj się">
         <Icon name="logout" size={17} />
         <span>Wyloguj</span>

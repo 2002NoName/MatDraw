@@ -412,6 +412,11 @@ flowchart TD
 ```
 
 - **Pointer Events** z `getCoalescedEvents()` (wysoka rozdzielczość próbkowania pióra).
+- Na powierzchni tablicy natywne `touchstart` i `touchmove` mają niepasywne listenery
+  z `preventDefault()`, aby Safari nie przejmowało szybkich dotknięć Apple Pencil.
+  Rysik ma pierwszeństwo przed rozpoczętym gestem dotykowym; dotyk podczas kontaktu rysika
+  jest ignorowany. Po odłożeniu rysika nowe gesty palcami nadal przesuwają i powiększają widok.
+  Utrata przechwycenia wskaźnika kończy gest, aby nie blokował kolejnej kreski.
 - Nacisk (`pressure`) zapisywany dla pióra; dla myszy/palca stała grubość. Kształt kreski generuje
   `perfect-freehand` (wygładzanie, zwężanie końców).
 - **Tryb „tylko rysik”** (palm rejection): pióro rysuje, palec przesuwa widok; włącza się automatycznie

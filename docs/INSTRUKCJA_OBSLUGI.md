@@ -48,7 +48,8 @@ Po pierwszym zalogowaniu zmień hasło na stronie **Moje konto** (patrz niżej).
 
 ### Moje konto – edycja danych i hasła
 
-Na stronie głównej kliknij swoją nazwę w prawym górnym rogu (lub otwórz `/konto`). Strona jest taka sama
+Na stronie głównej wybierz **Konto** w menu po prawej stronie (na telefonie rozwiń menu)
+lub otwórz `/konto`. Strona jest taka sama
 dla korepetytorki i ucznia:
 
 - **Dane konta** – widoczna nazwa (pokazywana innym przy kursorze i na liście osób na tablicy),
@@ -146,6 +147,8 @@ W sekcji **Uczestnicy**:
 
 Nowy wzór matematyczny ma domyślny rozmiar **32**; podczas edycji istniejącego wzoru zachowuje on
 dotychczasowy rozmiar. Rozmiar tekstu ustawia się osobno w oknie tekstu.
+Klawiatura matematyczna zamyka się razem z oknem edycji wzoru, a także po przełączeniu
+z edytora na pismo odręczne lub LaTeX.
 
 ### Obrazy
 

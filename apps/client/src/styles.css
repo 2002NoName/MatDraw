@@ -267,7 +267,7 @@ label.row {
 }
 .app-header {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 16px;
   min-height: 62px;
   position: relative;
@@ -285,13 +285,12 @@ label.row {
 }
 .app-nav {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
-.app-nav a,
-.topbar-user {
+.app-nav a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -306,8 +305,7 @@ label.row {
   white-space: nowrap;
   transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
 }
-.app-nav a:hover,
-.topbar-user:hover {
+.app-nav a:hover {
   background: #f1f6fb;
   color: var(--primary-dark);
 }
@@ -315,31 +313,6 @@ label.row {
   background: #e7f5ff;
   border-color: #c5e3fa;
   color: var(--primary-dark);
-}
-.topbar-user {
-  background: #f8f9fa;
-  border-color: #eceff1;
-  color: var(--text);
-  max-width: 220px;
-}
-.app-header .topbar-user,
-.app-header .topbar-user:hover {
-  background: transparent;
-  border-color: transparent;
-  align-items: center;
-  line-height: 1;
-}
-.app-header .topbar-user .role-badge {
-  padding: 0;
-  background: transparent;
-  border: 0;
-}
-.topbar-user-name {
-  display: flex;
-  align-items: center;
-  line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .signout-button {
   min-height: 40px;
@@ -1101,13 +1074,13 @@ button.danger.solid:hover:not(:disabled) {
     display: none;
   }
   .app-header {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 8px;
     padding: calc(8px + var(--safe-top)) calc(10px + var(--safe-right)) 8px calc(10px + var(--safe-left));
   }
   .app-header .mobile-menu-toggle {
     display: inline-flex;
-    grid-column: 4;
+    grid-column: 3;
     grid-row: 1;
     width: 38px;
     height: 38px;
@@ -1181,15 +1154,8 @@ button.danger.solid:hover:not(:disabled) {
     padding: 0 11px;
     font-size: 0.9rem;
   }
-  .app-header .topbar-user {
-    grid-column: 2;
-    grid-row: 1;
-    max-width: 150px;
-    min-height: 36px;
-    padding: 0 8px;
-  }
   .app-header .signout-button {
-    grid-column: 3;
+    grid-column: 2;
     grid-row: 1;
     min-height: 36px;
     padding: 0 9px;
@@ -1349,16 +1315,10 @@ button.danger.solid:hover:not(:disabled) {
 }
 
 @media (max-width: 420px) {
-  .app-header .topbar-user {
-    max-width: 44px;
-    width: 44px;
-    padding: 0;
-  }
   .app-header .mobile-menu-toggle {
     width: 36px;
     height: 36px;
   }
-  .topbar-user-name,
   .signout-button span {
     display: none;
   }

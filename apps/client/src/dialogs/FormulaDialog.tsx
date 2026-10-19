@@ -188,6 +188,8 @@ export function LatexInput({ value, onChange, autoFocus }: { value: string; onCh
     if (autoFocus) mathfield.focus();
     return () => {
       mathfield.removeEventListener('input', handleInput);
+      mathfield.blur();
+      window.mathVirtualKeyboard?.hide({ animate: false });
       mathfield.remove();
       mathfieldRef.current = null;
     };
@@ -201,6 +203,10 @@ export function LatexInput({ value, onChange, autoFocus }: { value: string; onCh
   useEffect(() => {
     const host = visualHostRef.current;
     const mathfield = mathfieldRef.current;
+    if (mode !== 'visual') {
+      mathfield?.blur();
+      window.mathVirtualKeyboard?.hide({ animate: false });
+    }
     if (mode === 'visual' && host && mathfield && !host.contains(mathfield)) {
       host.appendChild(mathfield);
     }
