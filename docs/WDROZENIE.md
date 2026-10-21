@@ -83,7 +83,7 @@ sequenceDiagram
    startu. Zmiana `JWT_SECRET` wyloguje wszystkich użytkowników. Nowe wartości można wygenerować np.
    `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 6. Zakładka **Environment Variables** w Coolify – nic nie jest wymagane:
-   - publiczny IPv4 serwera dla coturn (`--listening-ip`/`--relay-ip=54.38.53.158`, adres z rekordu A
+   - publiczny IPv4 serwera dla coturn (`--listening-ip`/`--relay-ip=84.46.245.14`, adres z rekordu A
      `matdraw.weblance-devs.pl`) jest wpisany na stałe w compose – zmień go tylko po przeniesieniu na inny serwer,
    - opcjonalnie: `SEED_TUTOR_PASSWORD` (hasło konta Weroniki Janeczek przy pierwszym starcie),
      `TUTOR_REGISTRATION_SECRET` (nadpisuje kod z compose), `STUN_URLS`, `TURN_URLS`,
@@ -91,7 +91,7 @@ sequenceDiagram
 
    > Ostrzeżenie Coolify *„Make sure you have added the DNS records correctly … → host.docker.internal”*
    > przy serwerze `localhost` jest fałszywym alarmem (Coolify sprawdza DNS z wnętrza kontenera).
-   > Wystarczy rekord A `matdraw.weblance-devs.pl → 54.38.53.158`; komunikat można zignorować.
+   > Wystarczy rekord A `matdraw.weblance-devs.pl → 84.46.245.14`; komunikat można zignorować.
 7. **Deploy.** Po zakończeniu: `https://matdraw.weblance-devs.pl/api/health` → `{"ok":true}`.
 8. Zaloguj się kontem korepetytorki (patrz niżej), zmień hasło na stronie **Moje konto** i przejdź
    weryfikację z [rozdziału 4](#4-weryfikacja-wdrożenia).

@@ -5,7 +5,7 @@
 # Domenę usługi "matdraw" ustaw na: https://matdraw.weblance-devs.pl:4000  (port = port wewnętrzny kontenera).
 # Sekrety (hasła MySQL, JWT, TURN, kod rejestracji korepetytorów) są wygenerowane losowo i wpisane poniżej na stałe.
 # UWAGA: nie zmieniaj hasła MySQL po pierwszym wdrożeniu – baza w wolumenie zachowuje hasło z pierwszego startu.
-# Publiczny IPv4 serwera dla coturn (--listening-ip/--relay-ip) = 54.38.53.158 (rekord A matdraw.weblance-devs.pl),
+# Publiczny IPv4 serwera dla coturn (--listening-ip/--relay-ip) = 84.46.245.14 (rekord A matdraw.weblance-devs.pl),
 # wpisany na stałe w sekcji coturn – zmień tylko po przeniesieniu na inny serwer. Opcjonalnie: SEED_TUTOR_PASSWORD.
 # Szczegóły: docs/WDROZENIE.md
 
@@ -64,7 +64,7 @@ services:
   # Sieć hosta (bez NAT Dockera): przekaźnik musi móc wysyłać ruch do własnego publicznego IP (relay ↔ relay,
   # gdy obie osoby są za restrykcyjnym NAT) – przez sieć mostkową Dockera takie pakiety giną.
   # Wymaga otwartych portów w firewallu serwera (np. ufw): 3478/udp, 3478/tcp, 49160-49200/udp.
-  # 54.38.53.158 = publiczny IPv4 serwera (rekord A matdraw.weblance-devs.pl) – zmień przy przeprowadzce.
+  # 84.46.245.14 = publiczny IPv4 serwera (rekord A matdraw.weblance-devs.pl) – zmień przy przeprowadzce.
   coturn:
     image: coturn/coturn:4.6
     restart: unless-stopped
@@ -73,8 +73,8 @@ services:
       - -n
       - --log-file=stdout
       - --listening-port=3478
-      - --listening-ip=54.38.53.158
-      - --relay-ip=54.38.53.158
+      - --listening-ip=84.46.245.14
+      - --relay-ip=84.46.245.14
       - --fingerprint
       - --use-auth-secret
       - --static-auth-secret=1f4c755969527267b501c149e93047e0db8b360e9a33a53956cf8fe0050bf83a
